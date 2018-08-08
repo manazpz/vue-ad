@@ -7,3 +7,11 @@ export function refreshToken(refreshToken) {
     data: { refreshToken }
   })
 }
+
+export function getConfig(query) {
+  return request({
+    url: '/config/list',
+    method: 'get',
+    params: query
+  })
+}
