@@ -65,7 +65,9 @@ export default {
     goodsList: 'goodsList',
     customer: 'customer',
     customerList: 'customerList',
-    customerEdit: 'customerEdit'
+    customerEdit: 'customerEdit',
+    user: 'user',
+    userList: 'userList'
   },
   navbar: {
     logOut: 'Log Out',
@@ -136,6 +138,17 @@ export default {
     createTime: 'CreateTime',
     lastCreateTime: 'LastCreateTime',
     remarks: 'Remarks'
+  },
+  user: {
+    nickName: 'nickName',
+    userName: 'userName',
+    password: 'password',
+    phone: 'phone',
+    name: 'name',
+    idCard: 'idCard',
+    statusName: 'statusName',
+    createTime: 'createTime',
+    updateTime: 'updateTime'
   },
   errorLog: {
     tips: 'Please click the bug icon in the upper right corner',

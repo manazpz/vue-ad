@@ -67,7 +67,9 @@ export default {
     goodsEdit: '商品新增',
     customer: '客户管理',
     customerList: '客户列表',
-    customerEdit: '新增客户'
+    customerEdit: '新增客户',
+    user: '用户管理',
+    userList: '用户列表'
   },
   navbar: {
     logOut: '退出登录',
@@ -123,6 +125,17 @@ export default {
     createTime: '创建时间',
     lastCreateTime: '修改时间',
     remarks: '备注'
+  },
+  user: {
+    nickName: '昵称',
+    userName: '用户名',
+    password: '密码',
+    phone: '手机号',
+    name: '名字',
+    idCard: '身份证',
+    statusName: '身份',
+    createTime: '创建时间',
+    updateTime: '修改时间'
   },
   table: {
     no: '序号',

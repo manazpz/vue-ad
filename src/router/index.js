@@ -69,6 +69,22 @@ export const constantRouterMap = [
       name: 'customerEdit',
       meta: { title: 'customerEdit' }
     }]
+  },
+
+  {
+    path: '/user',
+    component: Layout,
+    redirect: '/user/list',
+    meta: {
+      title: 'user',
+      icon: 'documentation'
+    },
+    children: [{
+      path: 'list',
+      component: () => import('@/views/user/basic/userList'),
+      name: 'userList',
+      meta: { title: 'userList', icon: 'documentation' }
+    }]
   }
 ]
 

@@ -15,3 +15,35 @@ export function getConfig(query) {
     params: query
   })
 }
+
+export function userList(query) {
+  return request({
+    url: '/user/list',
+    method: 'get',
+    params: query
+  })
+}
+
+export function insertUser(params) {
+  return request({
+    url: '/user/insert',
+    method: 'POST',
+    data: params
+  })
+}
+
+export function updateUser(params) {
+  return request({
+    url: '/user/update',
+    method: 'POST',
+    data: params
+  })
+}
+
+export function deleteUser(params) {
+  return request({
+    url: '/user/delete',
+    method: 'POST',
+    data: params
+  })
+}
