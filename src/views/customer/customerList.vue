@@ -11,7 +11,7 @@
         <el-option v-for="item in sexOptions" :key="item" :label="item" :value="item">
         </el-option>
       </el-select>
-      <el-select clearable class="filter-item" style="width: 130px" v-model="listQuery.type"
+      <el-select clearable class="filter-item" style="width: 130px" v-model="listQuery.typeKey"
                  :placeholder="$t('customer.typeName')">
         <el-option v-for="item in  calendarTypeOptions" :key="item.keyWord" :label="item.name"
                    :value="item.keyWord">
@@ -304,32 +304,36 @@
         })
       },
       updateData() {
-        this.listLoading = true
-        updateCustomer(this.temp).then(response => {
-          if (response.code === 50001) {
-            store.dispatch('GetRefreshToken').then(() => {
-              this.updateCustomer()
-            })
-          }
-          if (response.code === 200) {
-            for (const v of this.list) {
-              if (v.id === this.temp.id) {
-                const index = this.list.indexOf(v)
-                this.list.splice(index, 1, this.temp)
-                break
+        this.$refs['dataForm'].validate((valid) => {
+          if (valid) {
+            this.listLoading = true
+            updateCustomer(this.temp).then(response => {
+              if (response.code === 50001) {
+                store.dispatch('GetRefreshToken').then(() => {
+                  this.updateCustomer()
+                })
               }
-            }
-            this.listLoading = false
-            this.dialogFormVisible = false
-            this.$notify({
-              title: '成功',
-              message: '更新成功',
-              type: 'success',
-              duration: 2000
+              if (response.code === 200) {
+                for (const v of this.list) {
+                  if (v.id === this.temp.id) {
+                    const index = this.list.indexOf(v)
+                    this.list.splice(index, 1, this.temp)
+                    break
+                  }
+                }
+                this.listLoading = false
+                this.dialogFormVisible = false
+                this.$notify({
+                  title: '成功',
+                  message: '更新成功',
+                  type: 'success',
+                  duration: 2000
+                })
+              }
+            }).catch(() => {
+              this.listLoading = false
             })
           }
-        }).catch(() => {
-          this.listLoading = false
         })
       },
       handleDelete(row) {

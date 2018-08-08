@@ -1,18 +1,16 @@
 <template>
   <div class="app-container">
+
+    <!-- 过滤条件 start -->
     <div class="filter-container">
       <el-input @keyup.enter.native="handleFilter" style="width: 200px;" class="filter-item"
-                :placeholder="$t('table.title')" v-model="listQuery.title">
+                placeholder="商品名称" v-model="listQuery.name">
       </el-input>
-      <el-select clearable style="width: 90px" class="filter-item" v-model="listQuery.importance"
-                 :placeholder="$t('table.importance')">
-        <el-option v-for="item in importanceOptions" :key="item" :label="item" :value="item">
-        </el-option>
-      </el-select>
-      <el-select clearable class="filter-item" style="width: 130px" v-model="listQuery.type"
-                 :placeholder="$t('table.type')">
-        <el-option v-for="item in  calendarTypeOptions" :key="item.key" :label="item.display_name+'('+item.key+')'"
-                   :value="item.key">
+
+      <el-select clearable class="filter-item" style="width: 130px" v-model="listQuery.typeKey"
+                 placeholder="商品类型">
+        <el-option v-for="item in  calendarTypeOptions" :key="item.keyWord" :label="item.name"
+                   :value="item.keyWord">
         </el-option>
       </el-select>
       <el-select @change='handleFilter' style="width: 140px" class="filter-item" v-model="listQuery.sort">
@@ -25,112 +23,121 @@
       <el-button class="filter-item" style="margin-left: 10px;" @click="handleCreate" type="primary"
                  icon="el-icon-edit">{{$t('table.add')}}
       </el-button>
-      <el-button class="filter-item" type="primary" :loading="downloadLoading" v-waves icon="el-icon-download"
-                 @click="handleDownload">{{$t('table.export')}}
-      </el-button>
-      <el-checkbox class="filter-item" style='margin-left:15px;' @change='tableKey=tableKey+1' v-model="showReviewer">
-        {{$t('table.reviewer')}}
-      </el-checkbox>
     </div>
+    <!-- 过滤条件 end -->
 
+    <!-- 表格 start -->
     <el-table :key='tableKey' :data="list" v-loading="listLoading" border fit highlight-current-row
               style="width: 100%;min-height:1000px;">
-      <el-table-column align="center" :label="$t('table.id')" width="65">
+      <el-table-column align="center" label="序号" width="60">
         <template slot-scope="scope">
-          <span>{{scope.row.id}}</span>
+          <span>{{scope.$index+1}}</span>
         </template>
       </el-table-column>
-      <el-table-column width="150px" align="center" :label="$t('table.date')">
+      <el-table-column align="center" label="商品编码" width="140">
+      <template slot-scope="scope">
+        <span>{{scope.row.code}}</span>
+      </template>
+    </el-table-column>
+      <el-table-column align="center" label="商品名称" min-width="90">
         <template slot-scope="scope">
-          <span>{{scope.row.timestamp | parseTime('{y}-{m}-{d} {h}:{i}')}}</span>
+          <span>{{scope.row.name}}</span>
         </template>
       </el-table-column>
-      <el-table-column min-width="150px" :label="$t('table.title')">
+      <el-table-column align="center" label="商品别名" width="90">
         <template slot-scope="scope">
-          <span class="link-type" @click="handleUpdate(scope.row)">{{scope.row.title}}</span>
-          <el-tag>{{scope.row.type | typeFilter}}</el-tag>
+          <span>{{scope.row.alias}}</span>
         </template>
       </el-table-column>
-      <el-table-column width="110px" align="center" :label="$t('table.author')">
+      <el-table-column align="center" label="类型" width="90">
         <template slot-scope="scope">
-          <span>{{scope.row.author}}</span>
+          <span>{{scope.row.typeName}}</span>
         </template>
       </el-table-column>
-      <el-table-column width="110px" v-if='showReviewer' align="center" :label="$t('table.reviewer')">
+      <el-table-column align="center" label="单位" width="90">
         <template slot-scope="scope">
-          <span style='color:red;'>{{scope.row.reviewer}}</span>
+          <span>{{scope.row.unitName}}</span>
         </template>
       </el-table-column>
-      <el-table-column width="80px" :label="$t('table.importance')">
+      <el-table-column align="center" label="价格" width="90">
         <template slot-scope="scope">
-          <svg-icon v-for="n in +scope.row.importance" icon-class="star" class="meta-item__icon" :key="n"></svg-icon>
+          <span>{{scope.row.price}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" :label="$t('table.readings')" width="95">
+      <el-table-column align="center" label="创建人" width="90">
         <template slot-scope="scope">
-          <span v-if="scope.row.pageviews" class="link-type" @click='handleFetchPv(scope.row.pageviews)'>{{scope.row.pageviews}}</span>
-          <span v-else>0</span>
+          <span>{{scope.row.createUserName}}</span>
         </template>
       </el-table-column>
-      <el-table-column class-name="status-col" :label="$t('table.status')" width="100">
+      <el-table-column align="center" label="修改人" width="90">
         <template slot-scope="scope">
-          <el-tag :type="scope.row.status | statusFilter">{{scope.row.status}}</el-tag>
+          <span>{{scope.row.lastCreateUserName}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" :label="$t('table.actions')" width="230" class-name="small-padding fixed-width">
+      <el-table-column align="center" label="创建时间" min-width="90">
+        <template slot-scope="scope">
+          <span>{{scope.row.createTime}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="修改时间" min-width="90">
+        <template slot-scope="scope">
+          <span>{{scope.row.lastCreateTime}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column width="50" align="center" label="状态">
+        <template slot-scope="scope">
+          <svg-icon v-if="scope.row.status === 'Y'" icon-class="valid" class="table-status" />
+          <svg-icon v-else icon-class="noValid" class="table-status" />
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="操作" width="150" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">{{$t('table.edit')}}</el-button>
-          <el-button v-if="scope.row.status!='published'" size="mini" type="success"
-                     @click="handleModifyStatus(scope.row,'published')">{{$t('table.publish')}}
+          <el-button v-if="scope.row.status === 'Y'" size="mini" type="danger"
+                     @click="handleModifyStatus(scope.row, 'N')">{{$t('table.delete')}}
           </el-button>
-          <el-button v-if="scope.row.status!='draft'" size="mini" @click="handleModifyStatus(scope.row,'draft')">
-            {{$t('table.draft')}}
-          </el-button>
-          <el-button v-if="scope.row.status!='deleted'" size="mini" type="danger"
-                     @click="handleModifyStatus(scope.row,'deleted')">{{$t('table.delete')}}
+          <el-button  v-else size="mini" type="success"
+                      @click="handleModifyStatus(scope.row, 'Y')">{{$t('table.recovery')}}
           </el-button>
         </template>
       </el-table-column>
     </el-table>
+    <!-- 表格 end -->
 
+    <!-- 分页组件 start -->
     <div class="pagination-container">
       <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
-                     :current-page="listQuery.page" :page-sizes="[10,20,30, 50]" :page-size="listQuery.limit"
+                     :current-page="listQuery.pageNum" :page-sizes="[10,20,30, 50]" :page-size="listQuery.pageSize"
                      layout="total, sizes, prev, pager, next, jumper" :total="total">
       </el-pagination>
     </div>
+    <!-- 分页组件 end -->
 
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
+
+    <!-- 弹出框 start -->
+    <el-dialog :title="dialogStatus" :visible.sync="dialogFormVisible">
       <el-form :rules="rules" ref="dataForm" :model="temp" label-position="left" label-width="70px"
                style='width: 400px; margin-left:50px;'>
-        <el-form-item :label="$t('table.type')" prop="type">
-          <el-select class="filter-item" v-model="temp.type" placeholder="Please select">
-            <el-option v-for="item in  calendarTypeOptions" :key="item.key" :label="item.display_name"
-                       :value="item.key">
+        <el-form-item label-width="110px" label="商品名称" prop="name" class="postInfo-container-item">
+          <el-input v-model="temp.name" required placeholder="请输入商品名称"></el-input>
+        </el-form-item>
+        <el-form-item label-width="110px" label="商品别名" class="postInfo-container-item">
+          <el-input v-model="temp.alias" placeholder="请输入商品别名"></el-input>
+        </el-form-item>
+        <el-form-item label-width="110px" label="商品类型" class="postInfo-container-item">
+          <el-select clearable v-model="temp.typeKey">
+            <el-option v-for="item in calendarTypeOptions" :key="item.keyWord" :label="item.name" :value="item.keyWord" >
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item :label="$t('table.date')" prop="timestamp">
-          <el-date-picker v-model="temp.timestamp" type="datetime" placeholder="Please pick a date">
-          </el-date-picker>
-        </el-form-item>
-        <el-form-item :label="$t('table.title')" prop="title">
-          <el-input v-model="temp.title"></el-input>
-        </el-form-item>
-        <el-form-item :label="$t('table.status')">
-          <el-select class="filter-item" v-model="temp.status" placeholder="Please select">
-            <el-option v-for="item in  statusOptions" :key="item" :label="item" :value="item">
+        <el-form-item label-width="110px" label="单位" class="postInfo-container-item">
+          <el-select clearable v-model="temp.unitKey">
+            <el-option v-for="item in unitTypeOptions" :key="item.keyWord" :label="item.name" :value="item.keyWord" >
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item :label="$t('table.importance')">
-          <el-rate style="margin-top:8px;" v-model="temp.importance" :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
-                   :max='3'></el-rate>
-        </el-form-item>
-        <el-form-item :label="$t('table.remark')">
-          <el-input type="textarea" :autosize="{ minRows: 2, maxRows: 4}" placeholder="Please input"
-                    v-model="temp.remark">
-          </el-input>
+        <el-form-item label-width="110px" label="价格" class="postInfo-container-item">
+          <el-input v-model="temp.price" placeholder="请输入价格"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -139,40 +146,19 @@
         <el-button v-else type="primary" @click="updateData">{{$t('table.confirm')}}</el-button>
       </div>
     </el-dialog>
-
-    <el-dialog title="Reading statistics" :visible.sync="dialogPvVisible">
-      <el-table :data="pvData" border fit highlight-current-row style="width: 100%">
-        <el-table-column prop="key" label="Channel"></el-table-column>
-        <el-table-column prop="pv" label="Pv"></el-table-column>
-      </el-table>
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="dialogPvVisible = false">{{$t('table.confirm')}}</el-button>
-</span>
-    </el-dialog>
+    <!-- 弹出框 end -->
 
   </div>
 </template>
 
 <script>
-  import { goodsList } from '@/api/goods'
+  import { goodsList, createGoods, updateGoods, deleteGoods } from '@/api/goods'
+  import { getConfig } from '@/api/user'
   import waves from '@/directive/waves' // 水波纹指令
-  import { parseTime } from '@/utils'
-
-  const calendarTypeOptions = [
-    { key: 'CN', display_name: 'China' },
-    { key: 'US', display_name: 'USA' },
-    { key: 'JP', display_name: 'Japan' },
-    { key: 'EU', display_name: 'Eurozone' }
-  ]
-
-  // arr to obj ,such as { CN : "China", US : "USA" }
-  const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
-    acc[cur.key] = cur.display_name
-    return acc
-  }, {})
+  import store from '@/store'
 
   export default {
-    name: 'complexTable',
+    name: 'customerList',
     directives: {
       waves
     },
@@ -183,25 +169,25 @@
         total: null,
         listLoading: true,
         listQuery: {
-          page: 1,
-          limit: 20,
-          importance: undefined,
-          title: undefined,
-          type: undefined,
-          sort: '+id'
+          pageNum: 1,
+          pageSize: 20,
+          name: undefined,
+          typeKey: undefined,
+          sort: 'lastCreateTime DESC'
         },
-        importanceOptions: [1, 2, 3],
-        calendarTypeOptions,
-        sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
-        statusOptions: ['published', 'draft', 'deleted'],
-        showReviewer: false,
+        type: { type: 'GOODS' },
+        unit: { type: 'UNIT' },
+        calendarTypeOptions: [],
+        unitTypeOptions: [],
+        sortOptions: [{ label: '时间正序', key: 'lastCreateTime ASC' }, { label: '时间倒序', key: 'lastCreateTime DESC' }],
         temp: {
-          id: undefined,
-          importance: 1,
-          remark: '',
-          timestamp: new Date(),
-          title: '',
-          type: '',
+          code: undefined,
+          outCode: '',
+          name: '',
+          alias: '',
+          typeKey: '',
+          unit: '',
+          price: '',
           status: 'published'
         },
         dialogFormVisible: false,
@@ -211,121 +197,148 @@
           create: 'Create'
         },
         dialogPvVisible: false,
-        pvData: [],
         rules: {
-          type: [{ required: true, message: 'type is required', trigger: 'change' }],
-          timestamp: [{ type: 'date', required: true, message: 'timestamp is required', trigger: 'change' }],
-          title: [{ required: true, message: 'title is required', trigger: 'blur' }]
-        },
-        downloadLoading: false
-      }
-    },
-    filters: {
-      statusFilter(status) {
-        const statusMap = {
-          published: 'success',
-          draft: 'info',
-          deleted: 'danger'
+          name: [{ required: true, message: '商品名不为空', trigger: 'change' }]
         }
-        return statusMap[status]
-      },
-      typeFilter(type) {
-        return calendarTypeKeyValue[type]
       }
     },
     created() {
+      this.getType()
       this.getList()
     },
     methods: {
       getList() {
         this.listLoading = true
         goodsList(this.listQuery).then(response => {
-          this.list = response.data.items
-          this.total = response.data.total
-
-          // Just to simulate the time of the request
-          setTimeout(() => {
-            this.listLoading = false
-          }, 1.5 * 1000)
+          if (response.code === 50001) {
+            store.dispatch('GetRefreshToken').then(() => {
+              this.getList()
+            })
+          }
+          if (response.code === 200) {
+            this.list = response.data.items
+            this.total = response.data.total
+            setTimeout(() => {
+              this.listLoading = false
+            }, 1.5 * 1000)
+          }
+        }).catch(() => {
+          this.listLoading = false
+        })
+      },
+      getType() {
+        getConfig(this.type).then(response => {
+          this.calendarTypeOptions = response.data.items
+        })
+        getConfig(this.unit).then(response => {
+          this.unitTypeOptions = response.data.items
         })
       },
       handleFilter() {
-        this.listQuery.page = 1
+        this.listQuery.pageNum = 1
         this.getList()
       },
       handleSizeChange(val) {
-        this.listQuery.limit = val
+        this.listQuery.pageSize = val
         this.getList()
       },
       handleCurrentChange(val) {
-        this.listQuery.page = val
+        this.listQuery.pageNum = val
         this.getList()
       },
-      handleModifyStatus(row, status) {
-        this.$message({
-          message: '操作成功',
-          type: 'success'
+      handleModifyStatus(row, isValid) {
+        this.listLoading = true
+        const params = { id: row.goodsId, isValid: isValid }
+        deleteGoods(params).then(response => {
+          if (response.code === 50001) {
+            store.dispatch('GetRefreshToken').then(() => {
+              this.deleteCustomer()
+            })
+          }
+          if (response.code === 200) {
+            this.listLoading = false
+            this.dialogFormVisible = false
+            this.$message({
+              message: '操作成功',
+              type: 'success'
+            })
+            row.isValid = isValid
+          }
+        }).catch(() => {
+          this.listLoading = false
         })
-        row.status = status
       },
       resetTemp() {
         this.temp = {
           id: undefined,
-          importance: 1,
-          remark: '',
-          timestamp: new Date(),
-          title: '',
-          status: 'published',
-          type: ''
+          name: '',
+          alias: '',
+          typeKey: '',
+          unitKey: '',
+          price: '',
+          status: 'published'
         }
       },
       handleCreate() {
         this.resetTemp()
-        this.dialogStatus = 'create'
+        this.dialogStatus = '新增商品'
         this.dialogFormVisible = true
         this.$nextTick(() => {
           this.$refs['dataForm'].clearValidate()
         })
       },
       createData() {
+        this.$refs['dataForm'].validate((valid) => {
+          if (valid) {
+            this.listLoading = true
+            createGoods(this.temp).then(() => {
+              this.list.unshift(this.temp)
+              this.dialogFormVisible = false
+              this.$notify({
+                title: '成功',
+                message: '创建成功',
+                type: 'success',
+                duration: 2000
+              })
+            })
+          }
+        })
       },
       handleUpdate(row) {
         this.temp = Object.assign({}, row) // copy obj
         this.temp.timestamp = new Date(this.temp.timestamp)
-        this.dialogStatus = 'update'
+        this.dialogStatus = '编辑商品'
         this.dialogFormVisible = true
         this.$nextTick(() => {
           this.$refs['dataForm'].clearValidate()
         })
       },
       updateData() {
-      },
-      handleDelete(row) {
-      },
-      handleFetchPv(pv) {
-      },
-      handleDownload() {
-        this.downloadLoading = true
-        import('@/vendor/Export2Excel').then(excel => {
-          const tHeader = ['timestamp', 'title', 'type', 'importance', 'status']
-          const filterVal = ['timestamp', 'title', 'type', 'importance', 'status']
-          const data = this.formatJson(filterVal, this.list)
-          excel.export_json_to_excel({
-            header: tHeader,
-            data,
-            filename: 'table-list'
-          })
-          this.downloadLoading = false
+        this.$refs['dataForm'].validate((valid) => {
+          if (valid) {
+            const tempData = Object.assign({}, this.temp)
+            tempData.timestamp = +new Date(tempData.timestamp) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
+            this.listLoading = true
+            updateGoods(tempData).then(() => {
+              for (const v of this.list) {
+                if (v.id === this.temp.id) {
+                  const index = this.list.indexOf(v)
+                  this.list.splice(index, 1, this.temp)
+                  break
+                }
+              }
+              this.dialogFormVisible = false
+              this.$notify({
+                title: '成功',
+                message: '更新成功',
+                type: 'success',
+                duration: 2000
+              })
+            })
+          }
         })
       },
-      formatJson(filterVal, jsonData) {
-        return jsonData.map(v => filterVal.map(j => {
-          if (j === 'timestamp') {
-            return parseTime(v[j])
-          } else {
-            return v[j]
-          }
-        }))
+      handleDelete(row) {
       }
     }
   }

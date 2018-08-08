@@ -7,4 +7,26 @@ export function goodsList(query) {
     params: query
   })
 }
+export function createGoods(params) {
+  return request({
+    url: '/goods/insert',
+    method: 'POST',
+    data: params
+  })
+}
 
+export function updateGoods(params) {
+  return request({
+    url: '/goods/update',
+    method: 'POST',
+    data: params
+  })
+}
+
+export function deleteGoods(params) {
+  return request({
+    url: '/goods/delete',
+    method: 'POST',
+    data: params
+  })
+}

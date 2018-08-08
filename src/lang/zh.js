@@ -62,7 +62,9 @@ export default {
     theme: '换肤',
     clipboardDemo: 'Clipboard',
     i18n: '国际化',
-    goodsList: '商品主数据',
+    goods: '商品管理',
+    goodsList: '商品列表',
+    goodsEdit: '商品新增',
     customer: '客户管理',
     customerList: '客户列表',
     customerEdit: '新增客户'
