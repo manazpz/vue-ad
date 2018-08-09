@@ -175,8 +175,8 @@
           typeKey: undefined,
           sort: 'lastCreateTime DESC'
         },
-        type: { type: 'GOODS' },
-        unit: { type: 'UNIT' },
+        type: { type: '\'GOODS\'' },
+        unit: { type: '\'UNIT\'' },
         calendarTypeOptions: [],
         unitTypeOptions: [],
         sortOptions: [{ label: '时间正序', key: 'lastCreateTime ASC' }, { label: '时间倒序', key: 'lastCreateTime DESC' }],

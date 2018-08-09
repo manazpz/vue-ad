@@ -95,6 +95,7 @@
         postForm: Object.assign({}, defaultForm),
         loading: false,
         sexOptions: ['男', '女'],
+        type: { type: '\'CUSTOMER\'' },
         calendarTypeOptions: [],
         rules: {
           customerName: [{ required: true, message: '客户名不为空', validator: validateRequire }]

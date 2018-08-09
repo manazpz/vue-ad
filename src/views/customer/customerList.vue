@@ -205,7 +205,7 @@
           typeKey: undefined,
           sort: 'lastCreateTime DESC'
         },
-        type: { type: 'CUSTOMER' },
+        type: { type: '\'CUSTOMER\'' },
         sexOptions: ['男', '女'],
         calendarTypeOptions: [],
         sortOptions: [{ label: '时间正序', key: 'lastCreateTime ASC' }, { label: '时间倒序', key: 'lastCreateTime DESC' }],
