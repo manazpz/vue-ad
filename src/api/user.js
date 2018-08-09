@@ -47,3 +47,11 @@ export function deleteUser(params) {
     data: params
   })
 }
+
+export function updatePwd(data) {
+  return request({
+    url: '/password/update',
+    method: 'post',
+    data: data
+  })
+}
