@@ -48,6 +48,14 @@ export function deleteUser(params) {
   })
 }
 
+export function userCustomerList(query) {
+  return request({
+    url: '/user/customerlist',
+    method: 'get',
+    params: query
+  })
+}
+
 export function updatePwd(data) {
   return request({
     url: '/password/update',

@@ -36,7 +36,28 @@ export const constantRouterMap = [
       meta: { title: 'dashboard', img: 'favicon.ico', noCache: true }
     }]
   },
-
+  {
+    path: '/contract',
+    component: Layout,
+    redirect: '/contract/list',
+    meta: {
+      title: 'contract',
+      icon: 'documentation'
+    },
+    children: [{
+      path: 'list',
+      component: () => import('@/views/contract/contractList'),
+      name: 'contractList',
+      meta: { title: 'contractList', icon: 'documentation', noCache: true }
+    },
+    {
+      path: 'detail',
+      component: () => import('@/views/contract/contractDetail'),
+      name: 'contractDetail',
+      meta: { title: 'contractDetail', icon: 'documentation', noCache: true }
+    }
+    ]
+  },
   {
     path: '/goods',
     component: Layout,
@@ -48,7 +69,6 @@ export const constantRouterMap = [
       meta: { title: 'goodsList', icon: 'documentation', noCache: true }
     }]
   },
-
   {
     path: '/customer',
     component: Layout,

@@ -4,11 +4,10 @@
     <!-- 过滤条件 start -->
     <div class="filter-container">
       <el-input @keyup.enter.native="handleFilter" style="width: 200px;" class="filter-item"
-                placeholder="商品名称" v-model="listQuery.name">
+                placeholder="合同编号" v-model="listQuery.name">
       </el-input>
-
-      <el-select clearable class="filter-item" style="width: 130px" v-model="listQuery.typeKey"
-                 placeholder="商品类型">
+      <el-select clearable class="filter-item" style="width: 130px" v-model="listQuery.statusKey"
+                 placeholder="合同状态">
         <el-option v-for="item in  calendarTypeOptions" :key="item.keyWord" :label="item.name"
                    :value="item.keyWord">
         </el-option>
@@ -28,72 +27,67 @@
 
     <!-- 表格 start -->
     <el-table :key='tableKey' :data="list" v-loading="listLoading" border fit highlight-current-row
-              style="width: 100%;min-height:1000px;">
+              style="width: 100%;min-height:1000px;" @row-click="handdle">
       <el-table-column align="center" label="序号" width="60">
         <template slot-scope="scope">
           <span>{{scope.$index+1}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="商品编码" width="140">
+      <el-table-column align="center" label="合同编码" width="140">
       <template slot-scope="scope">
-        <span>{{scope.row.code}}</span>
+        <span>{{scope.row.number}}</span>
       </template>
     </el-table-column>
-      <el-table-column align="center" label="商品名称" min-width="90">
+      <el-table-column align="center" label="合同名称" min-width="90">
         <template slot-scope="scope">
-          <span>{{scope.row.name}}</span>
+          <span>{{scope.row.title}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="商品别名" width="90">
+      <el-table-column align="center" label="甲方" width="90">
         <template slot-scope="scope">
-          <span>{{scope.row.alias}}</span>
+          <span>{{scope.row.customer_a_Name}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="类型" width="90">
+      <el-table-column align="center" label="乙方" width="90">
         <template slot-scope="scope">
-          <span>{{scope.row.typeName}}</span>
+          <span>{{scope.row.customer_b_Name}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="单位" width="90">
+      <el-table-column align="center" label="总金额" width="90">
         <template slot-scope="scope">
-          <span>{{scope.row.unitName}}</span>
+          <span>{{scope.row.money_init}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="价格" width="90">
+      <el-table-column align="center" label="已付金额" width="90">
         <template slot-scope="scope">
-          <span>{{scope.row.price}}</span>
+          <span>{{scope.row.paid}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="创建人" width="90">
+      <el-table-column align="center" label="盈利" width="90">
         <template slot-scope="scope">
-          <span>{{scope.row.createUserName}}</span>
+          <span>{{scope.row.income}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="修改人" width="90">
+      <el-table-column align="center" label="签署时间" min-width="90">
         <template slot-scope="scope">
-          <span>{{scope.row.lastCreateUserName}}</span>
+          <span>{{scope.row.signTime}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="创建时间" min-width="90">
+      <el-table-column align="center" label="到期时间" min-width="90">
         <template slot-scope="scope">
-          <span>{{scope.row.createTime}}</span>
+          <span>{{scope.row.expireTime}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="修改时间" min-width="90">
+
+      <el-table-column width="90" align="center" label="状态">
         <template slot-scope="scope">
-          <span>{{scope.row.lastCreateTime}}</span>
-        </template>
-      </el-table-column>
-      <el-table-column width="50" align="center" label="状态">
-        <template slot-scope="scope">
-          <svg-icon v-if="scope.row.status === 'Y'" icon-class="valid" class="table-status" />
-          <svg-icon v-else icon-class="noValid" class="table-status" />
+          <span>{{scope.row.statusName}}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" label="操作" width="150" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">{{$t('table.edit')}}</el-button>
-          <el-button v-if="scope.row.status === 'Y'" size="mini" type="danger"
+          <el-button v-if="scope.row.del === 'Y'" size="mini" type="danger"
                      @click="handleModifyStatus(scope.row, 'N')">{{$t('table.delete')}}
           </el-button>
           <el-button  v-else size="mini" type="success"
@@ -118,31 +112,54 @@
     <el-dialog :title="dialogStatus" :visible.sync="dialogFormVisible">
       <el-form :rules="rules" ref="dataForm" :model="temp" label-position="left" label-width="70px"
                style='width: 400px; margin-left:50px;'>
-        <el-form-item label-width="110px" label="商品名称" prop="name" class="postInfo-container-item">
-          <el-input v-model="temp.name" required placeholder="请输入商品名称"></el-input>
+        <el-form-item label-width="110px" label="合同名称"  prop="title" class="postInfo-container-item">
+          <el-input v-model="temp.title" required placeholder="请输入合同名称"></el-input>
         </el-form-item>
-        <el-form-item label-width="110px" label="商品别名" class="postInfo-container-item">
-          <el-input v-model="temp.alias" placeholder="请输入商品别名"></el-input>
-        </el-form-item>
-        <el-form-item label-width="110px" label="商品类型" class="postInfo-container-item">
-          <el-select clearable v-model="temp.typeKey">
-            <el-option v-for="item in calendarTypeOptions" :key="item.keyWord" :label="item.name" :value="item.keyWord" >
+        <el-form-item label-width="110px" label="甲方" prop="customerKeyA" class="postInfo-container-item">
+          <el-select v-model="temp.customerKeyA" required filterable placeholder="请选择">
+            <el-option v-for="item in userListOptions" :key="item.id" :label="item.name" :value="item.id">
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label-width="110px" label="单位" class="postInfo-container-item">
-          <el-select clearable v-model="temp.unitKey">
-            <el-option v-for="item in unitTypeOptions" :key="item.keyWord" :label="item.name" :value="item.keyWord" >
+        <el-form-item label-width="110px" label="乙方" prop="customerKeyB" class="postInfo-container-item">
+          <el-select v-model="temp.customerKeyB" required filterable placeholder="请选择">
+            <el-option v-for="item in userListOptions" :key="item.id" :label="item.name" :value="item.id">
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label-width="110px" label="价格" class="postInfo-container-item">
-          <el-input v-model="temp.price" placeholder="请输入价格"></el-input>
+        <el-form-item label-width="110px" label="合同总金额" prop="money_init" class="postInfo-container-item">
+          <el-input v-model="temp.money_init" required placeholder="请输入合同总金额"></el-input>
+        </el-form-item>
+        <el-form-item label-width="110px" label="已付金额" prop="paid" class="postInfo-container-item">
+          <el-input v-model="temp.paid" required placeholder="请输入已付金额"></el-input>
+        </el-form-item>
+        <el-form-item label-width="110px" label="税率" prop="tax" class="postInfo-container-item">
+          <el-input v-model="temp.tax" required placeholder="请输入税率"></el-input>
+        </el-form-item>
+        <el-form-item label-width="110px" label="税额" prop="taxlimit" class="postInfo-container-item">
+          <el-input v-model="temp.taxlimit" required placeholder="请输入税额"></el-input>
+        </el-form-item>
+        <el-form-item label-width="110px" label="币种" prop="currency" class="postInfo-container-item">
+          <el-select v-model="temp.currency" style="width: 100px" >
+              <el-option v-for="item in currencyOptions" :key="item.keyWord" :label="item.name" :value="item.keyWord" >
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label-width="110px" label="签署时间" prop="signTime" class="postInfo-container-item">
+          <el-date-picker v-model="temp.signTime" type="datetime" required placeholder="选择日期时间">
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item label-width="110px" label="到期时间" prop="expireTime" class="postInfo-container-item">
+          <el-date-picker v-model="temp.expireTime" type="datetime" required placeholder="选择日期时间">
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item label-width="110px" label="摘要"  class="postInfo-container-item">
+          <el-input v-model="temp.reamrks1" type="textarea"  :rows="5"  placeholder="请摘要内容"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">{{$t('table.cancel')}}</el-button>
-        <el-button v-if="dialogStatus=='新增商品'" type="primary" @click="createData">{{$t('table.confirm')}}</el-button>
+        <el-button v-if="dialogStatus=='新增合同'" type="primary" @click="createData">{{$t('table.confirm')}}</el-button>
         <el-button v-else type="primary" @click="updateData">{{$t('table.confirm')}}</el-button>
       </div>
     </el-dialog>
@@ -152,13 +169,12 @@
 </template>
 
 <script>
-  import { goodsList, createGoods, updateGoods, deleteGoods } from '@/api/goods'
-  import { getConfig } from '@/api/user'
+  import { contractList, createContract, updateContract, deleteContract } from '@/api/contract'
+  import { getConfig, userCustomerList } from '@/api/user'
   import waves from '@/directive/waves' // 水波纹指令
   import store from '@/store'
-
   export default {
-    name: 'customerList',
+    name: 'contractList',
     directives: {
       waves
     },
@@ -172,22 +188,32 @@
           pageNum: 1,
           pageSize: 20,
           name: undefined,
-          typeKey: undefined,
+          statusKey: undefined,
           sort: 'lastCreateTime DESC'
         },
-        type: { type: '\'GOODS\'' },
-        unit: { type: '\'UNIT\'' },
+        type: { type: '\'CONTRACT\'' },
+        currencyType: { type: '\'CURRENCY\'' },
         calendarTypeOptions: [],
-        unitTypeOptions: [],
+        userListOptions: [],
+        currencyOptions: [],
         sortOptions: [{ label: '时间正序', key: 'lastCreateTime ASC' }, { label: '时间倒序', key: 'lastCreateTime DESC' }],
         temp: {
-          code: undefined,
-          outCode: '',
-          name: '',
-          alias: '',
-          typeKey: '',
-          unit: '',
-          price: '',
+          id: undefined,
+          title: '',
+          money: '',
+          money_init: '',
+          paid: '',
+          unpaid: '',
+          expenses: '',
+          signTime: '',
+          expireTime: '',
+          income: '',
+          customerKeyA: '',
+          customerKeyB: '',
+          tax: '',
+          taxlimit: '',
+          currency: '',
+          reamrks1: '',
           status: 'published'
         },
         dialogFormVisible: false,
@@ -198,7 +224,8 @@
         },
         dialogPvVisible: false,
         rules: {
-          name: [{ required: true, message: '商品名不为空', trigger: 'change' }]
+          customerKey: [{ required: true, message: '甲方不为空', trigger: 'change' }],
+          customer_b: [{ required: true, message: '乙方不为空', trigger: 'change' }]
         }
       }
     },
@@ -209,7 +236,7 @@
     methods: {
       getList() {
         this.listLoading = true
-        goodsList(this.listQuery).then(response => {
+        contractList(this.listQuery).then(response => {
           if (response.code === 50001) {
             store.dispatch('GetRefreshToken').then(() => {
               this.getList()
@@ -230,9 +257,16 @@
         getConfig(this.type).then(response => {
           this.calendarTypeOptions = response.data.items
         })
-        getConfig(this.unit).then(response => {
-          this.unitTypeOptions = response.data.items
+        getConfig(this.currencyType).then(response => {
+          this.currencyOptions = response.data.items
         })
+        userCustomerList().then(response => {
+          if (!response.data.items) return
+          this.userListOptions = response.data.items
+        })
+      },
+      handdle(row) {
+        this.$router.push({ path: '/contract/detail', query: { paicheNo: row }})
       },
       handleFilter() {
         this.listQuery.pageNum = 1
@@ -248,8 +282,8 @@
       },
       handleModifyStatus(row, isValid) {
         this.listLoading = true
-        const params = { id: row.goodsId, isValid: isValid }
-        deleteGoods(params).then(response => {
+        const params = { id: row.id, isValid: isValid }
+        deleteContract(params).then(response => {
           if (response.code === 50001) {
             store.dispatch('GetRefreshToken').then(() => {
               this.deleteCustomer()
@@ -263,6 +297,7 @@
               type: 'success'
             })
             row.isValid = isValid
+            this.getList()
           }
         }).catch(() => {
           this.listLoading = false
@@ -271,17 +306,27 @@
       resetTemp() {
         this.temp = {
           id: undefined,
-          name: '',
-          alias: '',
-          typeKey: '',
-          unitKey: '',
-          price: '',
+          title: '',
+          money: '',
+          money_init: '',
+          paid: '',
+          unpaid: '',
+          expenses: '',
+          signTime: '',
+          expireTime: '',
+          income: '',
+          tax: '',
+          taxlimit: '',
+          currency: '',
+          customerKeyA: '',
+          customerKeyB: '',
+          reamrks1: '',
           status: 'published'
         }
       },
       handleCreate() {
         this.resetTemp()
-        this.dialogStatus = '新增商品'
+        this.dialogStatus = '新增合同'
         this.dialogFormVisible = true
         this.$nextTick(() => {
           this.$refs['dataForm'].clearValidate()
@@ -291,7 +336,7 @@
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
             this.listLoading = true
-            createGoods(this.temp).then(() => {
+            createContract(this.temp).then(() => {
               this.list.unshift(this.temp)
               this.dialogFormVisible = false
               this.$notify({
@@ -300,6 +345,7 @@
                 type: 'success',
                 duration: 2000
               })
+              this.getList()
             })
           }
         })
@@ -307,7 +353,7 @@
       handleUpdate(row) {
         this.temp = Object.assign({}, row) // copy obj
         this.temp.timestamp = new Date(this.temp.timestamp)
-        this.dialogStatus = '编辑商品'
+        this.dialogStatus = '编辑合同'
         this.dialogFormVisible = true
         this.$nextTick(() => {
           this.$refs['dataForm'].clearValidate()
@@ -319,7 +365,7 @@
             const tempData = Object.assign({}, this.temp)
             tempData.timestamp = +new Date(tempData.timestamp) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
             this.listLoading = true
-            updateGoods(tempData).then(() => {
+            updateContract(tempData).then(() => {
               for (const v of this.list) {
                 if (v.id === this.temp.id) {
                   const index = this.list.indexOf(v)
@@ -334,6 +380,7 @@
                 type: 'success',
                 duration: 2000
               })
+              this.getList()
             })
           }
         })
