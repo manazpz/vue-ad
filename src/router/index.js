@@ -104,6 +104,12 @@ export const constantRouterMap = [
       component: () => import('@/views/user/basic/userList'),
       name: 'userList',
       meta: { title: 'userList', icon: 'documentation' }
+    },
+    {
+      path: 'permissions',
+      component: () => import('@/views/user/permission/permissionList'),
+      name: 'permissionList',
+      meta: { title: 'permissionList', icon: 'documentation' }
     }]
   }
 ]

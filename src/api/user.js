@@ -63,3 +63,31 @@ export function updatePwd(data) {
     data: data
   })
 }
+
+export function permissionList(query) {
+  return request({
+    url: '/user/permissions',
+    method: 'get',
+    params: query
+  })
+}
+
+export function insertPermission(params) {
+  params.isEnable = params.isEnable ? 'Y' : 'N'
+  return request({
+    url: '/user/permission/insert',
+    method: 'POST',
+    data: params
+  })
+}
+
+export function updatePermission(params) {
+  debugger
+  params.isEnable = params.isEnable ? 'Y' : 'N'
+  return request({
+    url: '/user/permission/update',
+    method: 'POST',
+    data: params
+  })
+}
+

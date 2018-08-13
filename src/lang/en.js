@@ -67,7 +67,8 @@ export default {
     customerList: 'customerList',
     customerEdit: 'customerEdit',
     user: 'user',
-    userList: 'userList'
+    userList: 'userList',
+    permissionList: 'permissionList'
   },
   navbar: {
     logOut: 'Log Out',
@@ -94,7 +95,13 @@ export default {
   },
   permission: {
     roles: 'Your roles',
-    switchRoles: 'Switch roles'
+    switchRoles: 'Switch roles',
+    type: 'type',
+    module: 'module',
+    name: 'name',
+    depict: 'depict',
+    extend: 'extend',
+    createTime: 'createTime'
   },
   guide: {
     description: 'The guide page is useful for some people who entered the project for the first time. You can briefly introduce the features of the project. Demo is based on ',
@@ -121,6 +128,8 @@ export default {
     draft: 'Draft',
     recovery: 'recovery',
     delete: 'Delete',
+    noEnable: 'NoEnable',
+    save: 'save',
     cancel: 'Cancel',
     confirm: 'Confirm'
   },

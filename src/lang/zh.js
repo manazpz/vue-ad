@@ -71,7 +71,8 @@ export default {
     customerList: '客户列表',
     customerEdit: '新增客户',
     user: '用户管理',
-    userList: '用户列表'
+    userList: '用户列表',
+    permissionList: '权限列表'
   },
   navbar: {
     logOut: '退出登录',
@@ -98,7 +99,13 @@ export default {
   },
   permission: {
     roles: '你的权限',
-    switchRoles: '切换权限'
+    switchRoles: '切换权限',
+    type: '触发类型',
+    module: '模块',
+    name: '名称',
+    depict: '描述',
+    extend: '过滤条件',
+    createTime: '创建时间'
   },
   guide: {
     description: '引导页对于一些第一次进入项目的人很有用，你可以简单介绍下项目的功能。本 Demo 是基于',
@@ -152,6 +159,8 @@ export default {
     draft: '草稿',
     recovery: '恢复',
     delete: '删除',
+    noEnable: '无效',
+    save: '保存',
     cancel: '取 消',
     confirm: '确 定'
   },
