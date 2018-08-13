@@ -23,12 +23,17 @@
           <i class="el-icon-caret-bottom"></i>
         </div>
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item divided>
-            <span @click="info" style="display:block;">{{name}}</span>
+          <el-dropdown-item >
+            <span @click="info" style="display:block;">zzz</span>
           </el-dropdown-item>
           <router-link to="/">
-            <el-dropdown-item>
+            <el-dropdown-item divided>
               {{$t('navbar.dashboard')}}
+            </el-dropdown-item>
+          </router-link>
+          <router-link to="/">
+            <el-dropdown-item>
+              {{$t('navbar.changePwd')}}
             </el-dropdown-item>
           </router-link>
           <el-dropdown-item divided>

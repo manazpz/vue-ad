@@ -74,6 +74,7 @@ export default {
     dashboard: 'Dashboard',
     github: 'Github',
     screenfull: 'screenfull',
+    changePwd: 'changePwd',
     theme: 'theme'
   },
   login: {

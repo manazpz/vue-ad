@@ -37,7 +37,7 @@ service.interceptors.response.use(
         duration: 5 * 1000
       })
       // 50000:其他客户端登录了;
-      if (res.code === 50000 || res.code === 50002) {
+      if (res.code === 50000 || res.code === 50002 || res.code === 50003 || res.code === 60003 || res.code === 10000) {
         MessageBox.confirm('你已被登出，可以取消继续留在该页面，或者重新登录', '确定登出', {
           confirmButtonText: '重新登录',
           cancelButtonText: '取消',
@@ -59,7 +59,7 @@ service.interceptors.response.use(
   error => {
     console.log('err' + error)// for debug
     Message({
-      message: error.message,
+      message: error.response.statusText != null ? error.response.statusText : error.message,
       type: 'error',
       duration: 5 * 1000
     })

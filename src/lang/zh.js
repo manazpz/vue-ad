@@ -78,6 +78,7 @@ export default {
     dashboard: '首页',
     github: '项目地址',
     screenfull: '全屏',
+    changePwd: '修改密码',
     theme: '换肤'
   },
   login: {

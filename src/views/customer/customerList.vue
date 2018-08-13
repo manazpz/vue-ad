@@ -229,6 +229,9 @@
         }
       }
     },
+    watch: {
+      '$route': 'getList'
+    },
     created() {
       this.getType()
       this.getList()

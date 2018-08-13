@@ -129,7 +129,7 @@
                   duration: 2000
                 })
                 this.loading = false
-                this.$router.push({ path: '/customer' })
+                this.$router.push({ path: '/customer/list' })
               }
             }).catch(() => {
               this.loading = false

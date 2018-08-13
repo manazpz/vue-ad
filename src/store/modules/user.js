@@ -74,6 +74,7 @@ const user = {
 
     // 刷新refreshtoken
     GetRefreshToken({ commit, state }) {
+      commit('SET_TOKEN', null)
       return new Promise((resolve, reject) => {
         refreshToken(state.refreshToken).then(response => {
           const data = response.data
