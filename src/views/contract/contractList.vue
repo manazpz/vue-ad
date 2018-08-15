@@ -27,61 +27,61 @@
 
     <!-- 表格 start -->
     <el-table :key='tableKey' :data="list" v-loading="listLoading" border fit highlight-current-row
-              style="width: 100%;min-height:1000px;" @row-click="handdle">
+              style="width: 100%;min-height:1000px;" >
       <el-table-column align="center" label="序号" width="60">
         <template slot-scope="scope">
-          <span>{{scope.$index+1}}</span>
+          <span @click="handdle(scope.$index, scope.row)">{{scope.$index+1}}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" label="合同编码" width="140">
       <template slot-scope="scope">
-        <span>{{scope.row.number}}</span>
+        <span @click="handdle(scope.$index, scope.row)">{{scope.row.number}}</span>
       </template>
     </el-table-column>
       <el-table-column align="center" label="合同名称" min-width="90">
         <template slot-scope="scope">
-          <span>{{scope.row.title}}</span>
+          <span @click="handdle(scope.$index, scope.row)">{{scope.row.title}}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" label="甲方" width="90">
         <template slot-scope="scope">
-          <span>{{scope.row.customer_a_Name}}</span>
+          <span @click="handdle(scope.$index, scope.row)">{{scope.row.customer_a_Name}}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" label="乙方" width="90">
         <template slot-scope="scope">
-          <span>{{scope.row.customer_b_Name}}</span>
+          <span @click="handdle(scope.$index, scope.row)">{{scope.row.customer_b_Name}}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" label="总金额" width="90">
         <template slot-scope="scope">
-          <span>{{scope.row.money_init}}</span>
+          <span @click="handdle(scope.$index, scope.row)">{{scope.row.money_init}}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" label="已付金额" width="90">
         <template slot-scope="scope">
-          <span>{{scope.row.paid}}</span>
+          <span @click="handdle(scope.$index, scope.row)">{{scope.row.paid}}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" label="盈利" width="90">
         <template slot-scope="scope">
-          <span>{{scope.row.income}}</span>
+          <span @click="handdle(scope.$index, scope.row)">{{scope.row.income}}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" label="签署时间" min-width="90">
         <template slot-scope="scope">
-          <span>{{scope.row.signTime}}</span>
+          <span @click="handdle(scope.$index, scope.row)">{{scope.row.signTime}}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" label="到期时间" min-width="90">
         <template slot-scope="scope">
-          <span>{{scope.row.expireTime}}</span>
+          <span @click="handdle(scope.$index, scope.row)">{{scope.row.expireTime}}</span>
         </template>
       </el-table-column>
 
       <el-table-column width="90" align="center" label="状态">
         <template slot-scope="scope">
-          <span>{{scope.row.statusName}}</span>
+          <span @click="handdle(scope.$index, scope.row)">{{scope.row.statusName}}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" label="操作" width="150" class-name="small-padding fixed-width">
@@ -266,9 +266,8 @@
           this.userListOptions = response.data.items
         })
       },
-      handdle(row) {
+      handdle(index, row) {
         this.$router.push({ path: 'detail', query: { id: row.id }})
-        // this.$router.push('detail')
       },
       handleFilter() {
         this.listQuery.pageNum = 1
@@ -284,6 +283,7 @@
       },
       handleModifyStatus(row, isValid) {
         this.listLoading = true
+
         const params = { id: row.id, isValid: isValid }
         deleteContract(params).then(response => {
           if (response.code === 50001) {
@@ -298,8 +298,7 @@
               message: '操作成功',
               type: 'success'
             })
-            row.isValid = isValid
-            this.getList()
+            row.del = isValid
           }
         }).catch(() => {
           this.listLoading = false
@@ -339,7 +338,6 @@
           if (valid) {
             this.listLoading = true
             createContract(this.temp).then(response => {
-              this.list.unshift(this.temp)
               this.dialogFormVisible = false
               this.$notify({
                 title: '成功',
@@ -347,8 +345,8 @@
                 type: 'success',
                 duration: 2000
               })
-              this.getList()
             })
+            this.getList()
           }
         })
       },

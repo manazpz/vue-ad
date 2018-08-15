@@ -158,7 +158,7 @@
   import store from '@/store'
 
   export default {
-    name: 'customerList',
+    name: 'goodsList',
     directives: {
       waves
     },
@@ -201,6 +201,9 @@
           name: [{ required: true, message: '商品名不为空', trigger: 'change' }]
         }
       }
+    },
+    watch: {
+      '$route': 'getList'
     },
     created() {
       this.getType()
@@ -262,7 +265,7 @@
               message: '操作成功',
               type: 'success'
             })
-            row.isValid = isValid
+            row.status = isValid
           }
         }).catch(() => {
           this.listLoading = false
@@ -292,7 +295,6 @@
           if (valid) {
             this.listLoading = true
             createGoods(this.temp).then(response => {
-              this.list.unshift(this.temp)
               this.dialogFormVisible = false
               this.$notify({
                 title: '成功',
@@ -301,6 +303,7 @@
                 duration: 2000
               })
             })
+            this.getList()
           }
         })
       },

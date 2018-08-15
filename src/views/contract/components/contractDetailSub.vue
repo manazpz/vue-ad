@@ -98,12 +98,6 @@
           statusKey: undefined,
           sort: 'lastCreateTime DESC'
         },
-        type: { type: '\'CONTRACT\'' },
-        currencyType: { type: '\'CURRENCY\'' },
-        calendarTypeOptions: [],
-        userListOptions: [],
-        currencyOptions: [],
-        sortOptions: [{ label: '时间正序', key: 'lastCreateTime ASC' }, { label: '时间倒序', key: 'lastCreateTime DESC' }],
         temp: {
           id: undefined,
           title: '',
@@ -124,12 +118,11 @@
           status: 'published'
         },
         rules: {
-          customerKey: [{ required: true, message: '甲方不为空', trigger: 'change' }],
-          customer_b: [{ required: true, message: '乙方不为空', trigger: 'change' }]
         }
       }
     },
     created() {
+      this.listQuery.id = this.$route.query.id
       this.getList()
     },
     methods: {

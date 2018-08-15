@@ -47,3 +47,11 @@ export function createContractPartner(params) {
     data: params
   })
 }
+
+export function contractSubList(query) {
+  return request({
+    url: '/contract/subList',
+    method: 'get',
+    params: query
+  })
+}
