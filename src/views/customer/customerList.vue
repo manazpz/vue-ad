@@ -279,7 +279,7 @@
         deleteCustomer(params).then(response => {
           if (response.code === 50001) {
             store.dispatch('GetRefreshToken').then(() => {
-              this.deleteCustomer()
+              this.handleModifyStatus(row, isValid)
             })
           }
           if (response.code === 200) {
@@ -313,7 +313,7 @@
             updateCustomer(this.temp).then(response => {
               if (response.code === 50001) {
                 store.dispatch('GetRefreshToken').then(() => {
-                  this.updateCustomer()
+                  this.updateData()
                 })
               }
               if (response.code === 200) {

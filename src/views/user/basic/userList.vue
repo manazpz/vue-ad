@@ -22,10 +22,10 @@
         <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key">
         </el-option>
       </el-select>
-      <el-button class="filter-item" type="primary" v-waves icon="el-icon-search" @click="handleFilter">
+      <el-button class="filter-item" type="primary" v-waves icon="el-icon-search" size="mini" @click="handleFilter">
         {{$t('table.search')}}
       </el-button>
-      <el-button class="filter-item" style="margin-left: 10px;" @click="handleCreate" type="primary"
+      <el-button class="filter-item" style="margin-left: 10px;" @click="handleCreate" type="primary" size="mini"
                  icon="el-icon-edit">{{$t('table.add')}}
       </el-button>
     </div>
@@ -85,9 +85,18 @@
           <svg-icon v-else icon-class="noValid" class="table-status" />
         </template>
       </el-table-column>
-      <el-table-column align="center" :label="$t('table.actions')" width="150" class-name="small-padding fixed-width">
+      <el-table-column align="center" :label="$t('table.actions')" width="200" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">{{$t('table.edit')}}</el-button>
+          <el-dropdown>
+            <el-button type="success" size="mini" >
+              {{$t('table.actions')}}<i class="el-icon-arrow-down el-icon--right"></i>
+            </el-button>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item @click.native = "handleUpdate(scope.row)">{{$t('table.edit')}}</el-dropdown-item>
+              <el-dropdown-item @click.native = "resetPwd(scope.row)">{{$t('user.resetPwd')}}</el-dropdown-item>
+              <el-dropdown-item @click.native = "permissions(scope.row)">{{$t('route.assignPermissions')}}</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
           <el-button v-if="scope.row.isValid === 'Y'" size="mini" type="danger"
                      @click="handleModifyStatus(scope.row, 'N')">{{$t('table.delete')}}
           </el-button>
@@ -148,7 +157,7 @@
 </template>
 
 <script>
-  import { getConfig, userList, deleteUser, insertUser, updateUser } from '@/api/user'
+  import { getConfig, userList, deleteUser, insertUser, updateUser, changePwd } from '@/api/user'
   import waves from '@/directive/waves' // 水波纹指令
   import store from '@/store'
 
@@ -188,7 +197,8 @@
         dialogStatus: '',
         rules: {
           nickName: [{ required: true, message: '昵称不为空', trigger: 'blur' }]
-        }
+        },
+        multipleSelection: []
       }
     },
     created() {
@@ -245,7 +255,7 @@
         deleteUser(params).then(response => {
           if (response.code === 50001) {
             store.dispatch('GetRefreshToken').then(() => {
-              this.deleteCustomer()
+              this.handleModifyStatus(row, isValid)
             })
           }
           if (response.code === 200) {
@@ -286,7 +296,7 @@
             insertUser(this.temp).then(response => {
               if (response.code === 50001) {
                 store.dispatch('GetRefreshToken').then(() => {
-                  this.updateCustomer()
+                  this.createData()
                 })
               }
               if (response.code === 200) {
@@ -321,7 +331,7 @@
             updateUser(this.temp).then(response => {
               if (response.code === 50001) {
                 store.dispatch('GetRefreshToken').then(() => {
-                  this.updateCustomer()
+                  this.updateData()
                 })
               }
               if (response.code === 200) {
@@ -347,7 +357,29 @@
           }
         })
       },
-      handleDelete(row) {
+      permissions(row) {
+        this.$router.push({ name: 'assignPermissions', params: row })
+      },
+      resetPwd(row) {
+        this.listLoading = true
+        changePwd(row, false).then(response => {
+          if (response.code === 50001) {
+            store.dispatch('GetRefreshToken').then(() => {
+              this.resetPwd(row)
+            })
+          }
+          if (response.code === 200) {
+            this.listLoading = false
+            this.$notify({
+              title: '成功',
+              message: '重置成功',
+              type: 'success',
+              duration: 2000
+            })
+          }
+        }).catch(() => {
+          this.listLoading = false
+        })
       }
     }
   }

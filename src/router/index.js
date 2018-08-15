@@ -41,18 +41,20 @@ export const constantRouterMap = [
     redirect: '/contract/list',
     meta: {
       title: 'contract',
-      icon: 'documentation'
+      icon: 'contract'
     },
     children: [{
       path: 'list',
       component: () => import('@/views/contract/contractList'),
       name: 'contractList',
-      meta: { title: 'contractList', icon: 'documentation', noCache: true }
+      meta: { title: 'contractList', noCache: true }
     },
     {
       path: 'detail',
       component: () => import('@/views/contract/contractDetail'),
-      hidden: true
+      hidden: true,
+      name: 'contractDetail',
+      meta: { title: 'contractDetail', noCache: true }
     }
     ]
   },
@@ -64,7 +66,7 @@ export const constantRouterMap = [
       path: 'list',
       component: () => import('@/views/goods/goodsList'),
       name: 'goodsList',
-      meta: { title: 'goodsList', icon: 'documentation', noCache: true }
+      meta: { title: 'goodsList', icon: 'goods', noCache: true }
     }]
   },
   {
@@ -73,7 +75,7 @@ export const constantRouterMap = [
     redirect: '/customer/list',
     meta: {
       title: 'customer',
-      icon: 'documentation'
+      icon: 'customer'
     },
     children: [{
       path: 'list',
@@ -95,19 +97,33 @@ export const constantRouterMap = [
     redirect: '/user/list',
     meta: {
       title: 'user',
-      icon: 'documentation'
+      icon: 'people'
     },
     children: [{
       path: 'list',
       component: () => import('@/views/user/basic/userList'),
       name: 'userList',
-      meta: { title: 'userList', icon: 'documentation' }
+      meta: { title: 'userList' }
     },
     {
       path: 'permissions',
       component: () => import('@/views/user/permission/permissionList'),
       name: 'permissionList',
-      meta: { title: 'permissionList', icon: 'documentation' }
+      meta: { title: 'permissionList' }
+    },
+    {
+      path: 'assignPermissions',
+      component: () => import('@/views/user/permission/assignPermissions'),
+      hidden: true,
+      name: 'assignPermissions',
+      meta: { title: 'assignPermissions' }
+    },
+    {
+      path: 'changePwd',
+      component: () => import('@/views/user/basic/changePwd'),
+      hidden: true,
+      name: 'changePwd',
+      meta: { title: 'changePwd' }
     }]
   }
 ]

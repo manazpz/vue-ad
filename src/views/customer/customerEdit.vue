@@ -118,7 +118,7 @@
             insertCustomer(this.postForm).then(response => {
               if (response.code === 50001) {
                 store.dispatch('GetRefreshToken').then(() => {
-                  this.getList()
+                  this.submitForm()
                 })
               }
               if (response.code === 200) {

@@ -234,7 +234,7 @@
         updatePermission(params).then(response => {
           if (response.code === 50001) {
             store.dispatch('GetRefreshToken').then(() => {
-              this.deleteCustomer()
+              this.handleModifyStatus(row, isEnable)
             })
           }
           if (response.code === 200) {
@@ -277,7 +277,7 @@
             insertPermission(this.temp).then(response => {
               if (response.code === 50001) {
                 store.dispatch('GetRefreshToken').then(() => {
-                  this.updateCustomer()
+                  this.createData()
                 })
               }
               if (response.code === 200) {
@@ -302,7 +302,7 @@
         updatePermission(row).then(response => {
           if (response.code === 50001) {
             store.dispatch('GetRefreshToken').then(() => {
-              this.updateCustomer()
+              this.confirmEdit(row)
             })
           }
           if (response.code === 200) {

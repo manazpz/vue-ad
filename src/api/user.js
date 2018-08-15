@@ -82,7 +82,6 @@ export function insertPermission(params) {
 }
 
 export function updatePermission(params) {
-  debugger
   params.isEnable = params.isEnable ? 'Y' : 'N'
   return request({
     url: '/user/permission/update',
@@ -91,3 +90,34 @@ export function updatePermission(params) {
   })
 }
 
+export function userPermission(query) {
+  if (!query) return null
+  return request({
+    url: '/user/permissions/' + query,
+    method: 'get'
+  })
+}
+
+export function allotUserPermission(params) {
+  return request({
+    url: '/user/permission/allot',
+    method: 'POST',
+    data: params
+  })
+}
+
+export function changePwd(params, flag) {
+  if (flag) {
+    return request({
+      url: '/sys/changePwd',
+      method: 'POST',
+      data: params
+    })
+  } else {
+    return request({
+      url: '/sys/resetPwd',
+      method: 'POST',
+      data: params
+    })
+  }
+}

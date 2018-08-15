@@ -1,6 +1,7 @@
 import { login, logout, getInfo } from '@/api/login'
-import { refreshToken } from '@/api/user'
+import { refreshToken, changePwd } from '@/api/user'
 import { getToken, setToken, removeToken, getRefreshToken, setRefreshToken, removeRefreshToken } from '@/utils/auth'
+import { Message } from 'element-ui'
 
 const user = {
   state: {
@@ -72,6 +73,28 @@ const user = {
       })
     },
 
+    // 修改密码
+    ChangPwd({ commit }, parmas) {
+      return new Promise((resolve, reject) => {
+        changePwd(parmas, true).then(res => {
+          Message({
+            message: res.message,
+            type: 'success',
+            duration: 5 * 1000
+          })
+          commit('SET_TOKEN', '')
+          commit('SET_REFRESH_TOKEN', '')
+          commit('SET_EXPTIME', null)
+          commit('SET_ROLES', [])
+          removeToken()
+          removeRefreshToken()
+          resolve()
+        }).catch(error => {
+          reject(error)
+        })
+      })
+    },
+
     // 刷新refreshtoken
     GetRefreshToken({ commit, state }) {
       commit('SET_TOKEN', null)
@@ -94,6 +117,7 @@ const user = {
     LogOut({ commit, state }) {
       return new Promise((resolve, reject) => {
         logout(state.token).then(() => {
+
           commit('SET_TOKEN', '')
           commit('SET_REFRESH_TOKEN', '')
           commit('SET_EXPTIME', null)

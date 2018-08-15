@@ -24,29 +24,36 @@
         </div>
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item >
-            <span @click="info" style="display:block;">zzz</span>
+            <span @click="info" style="display:block;">{{name}}</span>
           </el-dropdown-item>
           <router-link to="/">
             <el-dropdown-item divided>
               {{$t('navbar.dashboard')}}
             </el-dropdown-item>
           </router-link>
-          <router-link to="/">
+          <router-link to="/user/changePwd">
             <el-dropdown-item>
               {{$t('navbar.changePwd')}}
             </el-dropdown-item>
           </router-link>
+          <el-dropdown-item @click.native = "imagecropperShow=true">
+            {{$t('navbar.headImg')}}
+          </el-dropdown-item>
           <el-dropdown-item divided>
             <span @click="logout" style="display:block;">{{$t('navbar.logOut')}}</span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
     </div>
+
+    <image-cropper :width="300" :height="300" :url="url" @close='close' @crop-upload-success="cropSuccess" langType="en"
+                   :key="imagecropperKey" v-show="imagecropperShow"></image-cropper>
   </el-menu>
 </template>
 
 <script>
   import { mapGetters } from 'vuex'
+  import ImageCropper from '@/components/ImageCropper'
   import Breadcrumb from '@/components/Breadcrumb'
   import Hamburger from '@/components/Hamburger'
   import ErrorLog from '@/components/ErrorLog'
@@ -57,12 +64,20 @@
 
   export default {
     components: {
+      ImageCropper,
       Breadcrumb,
       Hamburger,
       ErrorLog,
       Screenfull,
       LangSelect,
       ThemePicker
+    },
+    data() {
+      return {
+        url: process.env.BASE_API + '/sys/uploadHead',
+        imagecropperShow: false,
+        imagecropperKey: 0
+      }
     },
     computed: {
       ...mapGetters([
@@ -86,6 +101,13 @@
           type: 'error',
           duration: 5 * 1000
         })
+      },
+      cropSuccess(resData) {
+        this.imagecropperShow = false
+        this.imagecropperKey = this.imagecropperKey + 1
+      },
+      close() {
+        this.imagecropperShow = false
       }
     }
   }
@@ -149,5 +171,10 @@
   }
   }
   }
+  }
+  .avatar{
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
   }
 </style>
