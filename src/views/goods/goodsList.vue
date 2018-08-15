@@ -291,7 +291,7 @@
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
             this.listLoading = true
-            createGoods(this.temp).then(() => {
+            createGoods(this.temp).then(response => {
               this.list.unshift(this.temp)
               this.dialogFormVisible = false
               this.$notify({

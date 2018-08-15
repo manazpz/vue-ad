@@ -31,3 +31,19 @@ export function deleteContract(params) {
     data: params
   })
 }
+
+export function getContract(params) {
+  return request({
+    url: '/contract/queryPartner',
+    method: 'POST',
+    data: params
+  })
+}
+
+export function createContractPartner(params) {
+  return request({
+    url: '/contract/insertPartner',
+    method: 'POST',
+    data: params
+  })
+}

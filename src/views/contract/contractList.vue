@@ -117,13 +117,13 @@
         </el-form-item>
         <el-form-item label-width="110px" label="甲方" prop="customerKeyA" class="postInfo-container-item">
           <el-select v-model="temp.customerKeyA" required filterable placeholder="请选择">
-            <el-option v-for="item in userListOptions" :key="item.id" :label="item.name" :value="item.id">
+            <el-option v-for="item in userListOptions" :key="item.customerId" :label="item.customerName" :value="item.customerId">
             </el-option>
           </el-select>
         </el-form-item>
         <el-form-item label-width="110px" label="乙方" prop="customerKeyB" class="postInfo-container-item">
           <el-select v-model="temp.customerKeyB" required filterable placeholder="请选择">
-            <el-option v-for="item in userListOptions" :key="item.id" :label="item.name" :value="item.id">
+            <el-option v-for="item in userListOptions" :key="item.customerId" :label="item.customerName" :value="item.customerId">
             </el-option>
           </el-select>
         </el-form-item>
@@ -170,7 +170,8 @@
 
 <script>
   import { contractList, createContract, updateContract, deleteContract } from '@/api/contract'
-  import { getConfig, userCustomerList } from '@/api/user'
+  import { customerList } from '@/api/customer'
+  import { getConfig } from '@/api/user'
   import waves from '@/directive/waves' // 水波纹指令
   import store from '@/store'
   export default {
@@ -260,13 +261,14 @@
         getConfig(this.currencyType).then(response => {
           this.currencyOptions = response.data.items
         })
-        userCustomerList().then(response => {
+        customerList(this.listQuery).then(response => {
           if (!response.data.items) return
           this.userListOptions = response.data.items
         })
       },
       handdle(row) {
-        this.$router.push({ path: '/contract/detail', query: { paicheNo: row }})
+        this.$router.push({ path: 'detail', query: { id: row.id }})
+        // this.$router.push('detail')
       },
       handleFilter() {
         this.listQuery.pageNum = 1
@@ -336,7 +338,7 @@
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
             this.listLoading = true
-            createContract(this.temp).then(() => {
+            createContract(this.temp).then(response => {
               this.list.unshift(this.temp)
               this.dialogFormVisible = false
               this.$notify({
@@ -363,7 +365,7 @@
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
             const tempData = Object.assign({}, this.temp)
-            tempData.timestamp = +new Date(tempData.timestamp) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
+            tempData.timestamp = +new Date(tempData.timestamp)
             this.listLoading = true
             updateContract(tempData).then(() => {
               for (const v of this.list) {

@@ -8,7 +8,6 @@ Vue.use(Router)
 
 /* Layout */
 import Layout from '../views/layout/Layout'
-
 /**
 * hidden: true                   if `hidden:true` will not show in the sidebar(default is false)
 * alwaysShow: true               if set true, will always show the root menu, whatever its child routes length
@@ -53,8 +52,7 @@ export const constantRouterMap = [
     {
       path: 'detail',
       component: () => import('@/views/contract/contractDetail'),
-      name: 'contractDetail',
-      meta: { title: 'contractDetail', icon: 'documentation', noCache: true }
+      hidden: true
     }
     ]
   },
