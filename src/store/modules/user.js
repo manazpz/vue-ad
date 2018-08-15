@@ -73,6 +73,10 @@ const user = {
       })
     },
 
+    setAvatar({ commit }, avatar) {
+      commit('SET_AVATAR', avatar)
+    },
+
     // 修改密码
     ChangPwd({ commit }, parmas) {
       return new Promise((resolve, reject) => {

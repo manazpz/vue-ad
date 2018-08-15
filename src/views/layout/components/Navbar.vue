@@ -105,6 +105,7 @@
       cropSuccess(resData) {
         this.imagecropperShow = false
         this.imagecropperKey = this.imagecropperKey + 1
+        this.$store.dispatch('setAvatar', resData.headImg)
       },
       close() {
         this.imagecropperShow = false
