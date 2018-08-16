@@ -35,10 +35,10 @@
         </template>
       </el-table-column>
       <el-table-column align="center" label="商品编码" width="140">
-      <template slot-scope="scope">
-        <span>{{scope.row.code}}</span>
-      </template>
-    </el-table-column>
+        <template slot-scope="scope">
+          <span>{{scope.row.code}}</span>
+        </template>
+      </el-table-column>
       <el-table-column align="center" label="商品名称" min-width="90">
         <template slot-scope="scope">
           <span>{{scope.row.name}}</span>
