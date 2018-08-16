@@ -47,7 +47,7 @@ export const constantRouterMap = [
       path: 'list',
       component: () => import('@/views/contract/contractList'),
       name: 'contractList',
-      meta: { title: 'contractList', noCache: true }
+      meta: { title: 'contractList', icon: 'contract', noCache: true }
     },
     {
       path: 'detail',
@@ -55,8 +55,7 @@ export const constantRouterMap = [
       hidden: true,
       name: 'contractDetail',
       meta: { title: 'contractDetail', noCache: true }
-    }
-    ]
+    }]
   },
   {
     path: '/goods',
@@ -69,6 +68,7 @@ export const constantRouterMap = [
       meta: { title: 'goodsList', icon: 'goods', noCache: true }
     }]
   },
+
   {
     path: '/customer',
     component: Layout,
