@@ -13,6 +13,11 @@
           <span>{{scope.row.number}}</span>
         </template>
       </el-table-column>
+      <el-table-column align="center" label="父合同编码" width="140">
+        <template slot-scope="scope">
+          <span>{{scope.row.parent}}</span>
+        </template>
+      </el-table-column>
       <el-table-column align="center" label="合同名称" min-width="90">
         <template slot-scope="scope">
           <span>{{scope.row.title}}</span>
@@ -77,7 +82,7 @@
 </template>
 
 <script>
-  import { contractList } from '@/api/contract'
+  import { contractSubList } from '@/api/contract'
   import waves from '@/directive/waves' // 水波纹指令
   import store from '@/store'
   export default {
@@ -128,7 +133,7 @@
     methods: {
       getList() {
         this.listLoading = true
-        contractList(this.listQuery).then(response => {
+        contractSubList(this.listQuery).then(response => {
           if (response.code === 50001) {
             store.dispatch('GetRefreshToken').then(() => {
               this.getList()

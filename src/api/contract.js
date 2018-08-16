@@ -55,3 +55,19 @@ export function contractSubList(query) {
     params: query
   })
 }
+
+export function createcontractSub(query) {
+  return request({
+    url: '/contract/insertSub',
+    method: 'POST',
+    params: query
+  })
+}
+
+export function createcontractExpnses(query) {
+  return request({
+    url: '/contract/insertExpnses',
+    method: 'POST',
+    params: query
+  })
+}

@@ -27,66 +27,80 @@
 
     <!-- 表格 start -->
     <el-table :key='tableKey' :data="list" v-loading="listLoading" border fit highlight-current-row
-              style="width: 100%;min-height:1000px;" >
+              style="width: 100%;min-height:1000px;" @row-click="handdle">
       <el-table-column align="center" label="序号" width="60">
         <template slot-scope="scope">
-          <span @click="handdle(scope.$index, scope.row)">{{scope.$index+1}}</span>
+          <span>{{scope.$index+1}}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" label="合同编码" width="140">
       <template slot-scope="scope">
-        <span @click="handdle(scope.$index, scope.row)">{{scope.row.number}}</span>
+        <span>{{scope.row.number}}</span>
       </template>
     </el-table-column>
+      <el-table-column align="center" label="子合同编码" width="140">
+        <template slot-scope="scope">
+          <span>{{scope.row.parent}}</span>
+        </template>
+      </el-table-column>
       <el-table-column align="center" label="合同名称" min-width="90">
         <template slot-scope="scope">
-          <span @click="handdle(scope.$index, scope.row)">{{scope.row.title}}</span>
+          <span>{{scope.row.title}}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" label="甲方" width="90">
         <template slot-scope="scope">
-          <span @click="handdle(scope.$index, scope.row)">{{scope.row.customer_a_Name}}</span>
+          <span>{{scope.row.customer_a_Name}}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" label="乙方" width="90">
         <template slot-scope="scope">
-          <span @click="handdle(scope.$index, scope.row)">{{scope.row.customer_b_Name}}</span>
+          <span>{{scope.row.customer_b_Name}}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" label="总金额" width="90">
         <template slot-scope="scope">
-          <span @click="handdle(scope.$index, scope.row)">{{scope.row.money_init}}</span>
+          <span>{{scope.row.money_init}}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" label="已付金额" width="90">
         <template slot-scope="scope">
-          <span @click="handdle(scope.$index, scope.row)">{{scope.row.paid}}</span>
+          <span>{{scope.row.paid}}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" label="盈利" width="90">
         <template slot-scope="scope">
-          <span @click="handdle(scope.$index, scope.row)">{{scope.row.income}}</span>
+          <span>{{scope.row.income}}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" label="签署时间" min-width="90">
         <template slot-scope="scope">
-          <span @click="handdle(scope.$index, scope.row)">{{scope.row.signTime}}</span>
+          <span>{{scope.row.signTime}}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" label="到期时间" min-width="90">
         <template slot-scope="scope">
-          <span @click="handdle(scope.$index, scope.row)">{{scope.row.expireTime}}</span>
+          <span>{{scope.row.expireTime}}</span>
         </template>
       </el-table-column>
 
       <el-table-column width="90" align="center" label="状态">
         <template slot-scope="scope">
-          <span @click="handdle(scope.$index, scope.row)">{{scope.row.statusName}}</span>
+          <span>{{scope.row.statusName}}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" label="操作" width="150" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">{{$t('table.edit')}}</el-button>
+          <!--<el-button type="primary" size="mini" @click="handleUpdate(scope.row)">{{$t('table.edit')}}</el-button>-->
+          <el-dropdown>
+            <el-button type="success" size="mini" >
+              操作<i class="el-icon-arrow-down el-icon--right"></i>
+            </el-button>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item @click.native = "handleUpdate(scope.row)">编辑</el-dropdown-item>
+              <el-dropdown-item @click.native = "creatSub(scope.row)">新增子合同</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
           <el-button v-if="scope.row.del === 'Y'" size="mini" type="danger"
                      @click="handleModifyStatus(scope.row, 'N')">{{$t('table.delete')}}
           </el-button>
@@ -165,11 +179,35 @@
     </el-dialog>
     <!-- 弹出框 end -->
 
+    <!-- 弹出框新增子合同 start -->
+    <el-dialog :title="dialogSubStatus" :visible.sync="dialogFormSubVisible">
+      <el-form :rules="rules" ref="dataSubForm" :model="temps" label-position="left" label-width="70px"
+               style='width: 400px; margin-left:50px;'>
+        <el-form-item label-width="110px" label="甲方" prop="customerA" class="postInfo-container-item">
+          <el-select v-model="temps.customerA" required filterable placeholder="请选择">
+            <el-option v-for="item in userListOptions" :key="item.customerId" :label="item.customerName" :value="item.customerId">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label-width="110px" label="乙方" prop="customerB" class="postInfo-container-item">
+          <el-select v-model="temps.customerB" required filterable placeholder="请选择">
+            <el-option v-for="item in userListOptions" :key="item.customerId" :label="item.customerName" :value="item.customerId">
+            </el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormSubVisible = false">{{$t('table.cancel')}}</el-button>
+        <el-button type="primary" @click="createSubData">{{$t('table.confirm')}}</el-button>
+      </div>
+    </el-dialog>
+    <!-- 弹出框新增子合同 end -->
+
   </div>
 </template>
 
 <script>
-  import { contractList, createContract, updateContract, deleteContract } from '@/api/contract'
+  import { contractList, createContract, updateContract, deleteContract, createcontractSub } from '@/api/contract'
   import { customerList } from '@/api/customer'
   import { getConfig } from '@/api/user'
   import waves from '@/directive/waves' // 水波纹指令
@@ -217,13 +255,21 @@
           reamrks1: '',
           status: 'published'
         },
+        temps: {
+          id: undefined,
+          customerA: '',
+          customerB: '',
+          reamrks1: '',
+          status: 'published'
+        },
         dialogFormVisible: false,
         dialogStatus: '',
+        dialogSubStatus: '',
+        dialogFormSubVisible: false,
         textMap: {
           update: 'Edit',
           create: 'Create'
         },
-        dialogPvVisible: false,
         rules: {
           customerKey: [{ required: true, message: '甲方不为空', trigger: 'change' }],
           customer_b: [{ required: true, message: '乙方不为空', trigger: 'change' }]
@@ -266,7 +312,7 @@
           this.userListOptions = response.data.items
         })
       },
-      handdle(index, row) {
+      handdle(row) {
         this.$router.push({ path: 'detail', query: { id: row.id }})
       },
       handleFilter() {
@@ -325,6 +371,15 @@
           status: 'published'
         }
       },
+      resetSubTemp() {
+        this.temps = {
+          id: undefined,
+          customerA: '',
+          customerB: '',
+          reamrks1: '',
+          status: 'published'
+        }
+      },
       handleCreate() {
         this.resetTemp()
         this.dialogStatus = '新增合同'
@@ -333,12 +388,38 @@
           this.$refs['dataForm'].clearValidate()
         })
       },
+      creatSub(row) {
+        this.resetSubTemp()
+        this.temps.id = row.id
+        this.dialogSubStatus = '新增子合同'
+        this.dialogFormSubVisible = true
+        this.$nextTick(() => {
+          this.$refs['dataSubForm'].clearValidate()
+        })
+      },
       createData() {
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
             this.listLoading = true
             createContract(this.temp).then(response => {
               this.dialogFormVisible = false
+              this.$notify({
+                title: '成功',
+                message: '创建成功',
+                type: 'success',
+                duration: 2000
+              })
+            })
+            this.getList()
+          }
+        })
+      },
+      createSubData() {
+        this.$refs['dataSubForm'].validate((valid) => {
+          if (valid) {
+            this.listLoading = true
+            createcontractSub(this.temps).then(response => {
+              this.dialogFormSubVisible = false
               this.$notify({
                 title: '成功',
                 message: '创建成功',

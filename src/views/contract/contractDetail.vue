@@ -107,6 +107,12 @@
       <el-dialog :title="dialogExpnses" :visible.sync="dialogExpnsesVisible">
         <el-form :rules="rules" ref="dataFormExpnses" :model="temps" label-position="left" label-width="70px"
                  style='width: 400px; margin-left:50px;'>
+          <el-form-item label-width="110px" label="类型" class="postInfo-container-item">
+            <el-select v-model="temps.typePaye" required filterable placeholder="请选择">
+              <el-option v-for="item in typePayOptions" :key="item.keyWord" :label="item.name" :value="item.keyWord" >
+              </el-option>
+            </el-select>
+          </el-form-item>
           <el-form-item label-width="110px" label="付款人" prop="customerKeyB" class="postInfo-container-item">
             <el-select v-model="temps.payer" required filterable placeholder="请选择">
               <el-option v-for="item in userListOptions" :key="item.customerId" :label="item.customerName" :value="item.customerId">
@@ -142,7 +148,7 @@
 </template>
 <script>
   import Sticky from '@/components/Sticky' // 粘性header组件
-  import { createContractPartner, contractList } from '@/api/contract'
+  import { createContractPartner, contractList, createcontractExpnses } from '@/api/contract'
   import { customerList } from '@/api/customer'
   import { getConfig } from '@/api/user'
   import store from '@/store'
@@ -158,6 +164,7 @@
         total: null,
         listLoading: true,
         type: { type: '\'TYPEC\'' },
+        typePay: { type: '\'TYPEPAY\'' },
         tabMapOptions: [
           { label: '子合同', key: 'CN' },
           { label: '合作伙伴', key: 'US' }
@@ -184,6 +191,7 @@
         temps: {
           id: undefined,
           type: '',
+          typePaye: '',
           amount: '',
           payee: '',
           payer: '',
@@ -192,6 +200,7 @@
           status: 'published'
         },
         typeOptions: [],
+        typePayOptions: [],
         userListOptions: [],
         activeTitle: '合同明细',
         title: '',
@@ -206,6 +215,7 @@
     },
     created() {
       this.listQuery.id = this.$route.query.id
+      this.temps.id = this.$route.query.id
       this.getType()
       this.getList()
     },
@@ -213,6 +223,9 @@
       getType() {
         getConfig(this.type).then(response => {
           this.typeOptions = response.data.items
+        })
+        getConfig(this.typePay).then(response => {
+          this.typePayOptions = response.data.items
         })
       },
       getList() {
@@ -254,6 +267,7 @@
         this.temps = {
           id: undefined,
           types: '',
+          typePaye: '',
           contractId: '',
           income: '',
           user: '',
@@ -304,19 +318,18 @@
         this.$refs['dataFormExpnses'].validate((valid) => {
           if (valid) {
             this.listLoading = true
-            // createContractPartner(this.temp).then(response => {
-            //   if (response.code === 200) {
-            //     this.list.unshift(this.temp)
-            //     this.listLoading = false
-            //     this.dialogExpnsesVisible = false
-            //     this.$notify({
-            //       title: '成功',
-            //       message: '添加成功',
-            //       type: 'success',
-            //       duration: 2000
-            //     })
-            //   }
-            // })
+            createcontractExpnses(this.temps).then(response => {
+              if (response.code === 200) {
+                this.listLoading = false
+                this.dialogExpnsesVisible = false
+                this.$notify({
+                  title: '成功',
+                  message: '添加成功',
+                  type: 'success',
+                  duration: 2000
+                })
+              }
+            })
           }
         })
       }
