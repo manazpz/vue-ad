@@ -89,15 +89,25 @@ export const constantRouterMap = [
       name: 'customerEdit',
       meta: { title: 'customerEdit' }
     }]
-  },
+  }
+]
 
+export default new Router({
+  // mode: 'history', //后端支持可开
+  scrollBehavior: () => ({ y: 0 }),
+  routes: constantRouterMap
+})
+
+export const asyncRouterMap = [
   {
     path: '/user',
     component: Layout,
     redirect: '/user/list',
+    alwaysShow: true, // will always show the root menu
     meta: {
       title: 'user',
-      icon: 'people'
+      icon: 'people',
+      roles: ['AD']
     },
     children: [{
       path: 'list',
@@ -127,10 +137,4 @@ export const constantRouterMap = [
     }]
   }
 ]
-
-export default new Router({
-  // mode: 'history', //后端支持可开
-  scrollBehavior: () => ({ y: 0 }),
-  routes: constantRouterMap
-})
 

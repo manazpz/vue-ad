@@ -110,6 +110,7 @@ import language from './utils/language.js'
 import mimes from './utils/mimes.js'
 import data2blob from './utils/data2blob.js'
 import effectRipple from './utils/effectRipple.js'
+ import store from '@/store'
 export default {
   props: {
     // 域，上传文件name，触发事件会带上（如果一个页面多个图片上传控件，可以做区分
@@ -815,6 +816,7 @@ export default {
           that.progress = 100 * Math.round(event.loaded) / event.total
         }
       }
+      var timer = null;
       // 上传文件
       that.reset()
       that.loading = 1
@@ -822,10 +824,32 @@ export default {
       request({
         url,
         method: 'post',
+        transformRequest: [function (data) {
+          // 对 data 进行任意转换处理
+          timer = setInterval(function () {
+            if(that.progress <= 90) {
+              that.progress = that.progress + 2;
+            }else {
+              clearInterval(timer);
+            }
+
+          },2000)
+          return data;
+        }],
+        transformResponse: [function (data) {
+          that.progress = 100
+          return data;
+        }],
         data: fmData
       }).then(resData => {
-        that.loading = 2
-        that.$emit('crop-upload-success', resData.data)
+        if (resData.code === 50001) {
+          store.dispatch('GetRefreshToken').then(() => {
+            this.upload()
+          })
+        }else {
+          that.loading = 2
+          that.$emit('crop-upload-success', resData.data)
+        }
       }).catch(err => {
         if (that.value) {
           that.loading = 3
