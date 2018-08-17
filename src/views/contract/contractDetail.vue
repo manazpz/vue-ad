@@ -2,20 +2,20 @@
   <div class="tab-container">
     <el-form class="form-container" :model="list" :rules="rules" ref="temp">
     <h2 style="margin-top:0;">{{ activeTitle }}</h2>
+      <!-- 悬浮框 start -->
+      <sticky :className="'sub-navbar '+temp.status">
+        <el-button  style="margin-left: 10px;" type="success" @click="handleCreate">新增合伙人
+        </el-button><el-button  style="margin-left: 10px;" type="success" @click="handleCreatePay">新增收支明细
+      </el-button>
+      </sticky>
+      <!-- 悬浮框 end -->
+      <hr>
     <el-row :gutter="20">
       <el-col :span="8">名称: {{ list.title }}</el-col>
       <el-col :span="8">起始时间: {{ list.signTime }}</el-col>
       <el-col :span="4">结束时间: {{ list.expireTime }}</el-col>
     </el-row>
     <hr>
-
-    <!-- 悬浮框 start -->
-    <sticky :className="'sub-navbar '+temp.status">
-      <el-button  style="margin-left: 10px;" type="success" @click="handleCreate">新增合伙人
-      </el-button><el-button  style="margin-left: 10px;" type="success" @click="handleCreatePay">新增收支明细
-    </el-button>
-    </sticky>
-    <!-- 悬浮框 end -->
 
     <div class="createPost-main-container">
       <div class="postInfo-container">
