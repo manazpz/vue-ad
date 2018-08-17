@@ -2,7 +2,7 @@
   <div class="app-container">
     <!-- 表格 start -->
     <el-table :key='tableKey' :data="list" v-loading="listLoading" border fit highlight-current-row
-              style="width: 100%;min-height:1000px;">
+              style="width: 100%;min-height:400px;">
       <el-table-column align="center" label="序号" width="60">
         <template slot-scope="scope">
           <span>{{scope.$index+1}}</span>
@@ -98,7 +98,7 @@
         listLoading: true,
         listQuery: {
           pageNum: 1,
-          pageSize: 20,
+          pageSize: 10,
           name: undefined,
           statusKey: undefined,
           sort: 'lastCreateTime DESC'

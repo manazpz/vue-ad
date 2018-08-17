@@ -71,3 +71,11 @@ export function createcontractExpnses(query) {
     params: query
   })
 }
+
+export function expnsesList(params) {
+  return request({
+    url: '/contract/queryExpnses',
+    method: 'POST',
+    data: params
+  })
+}

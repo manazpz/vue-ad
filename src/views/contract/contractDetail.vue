@@ -8,6 +8,7 @@
       <el-col :span="4">结束时间: {{ list.expireTime }}</el-col>
     </el-row>
     <hr>
+
     <!-- 悬浮框 start -->
     <sticky :className="'sub-navbar '+temp.status">
       <el-button  style="margin-left: 10px;" type="success" @click="handleCreate">新增合伙人
@@ -15,6 +16,7 @@
     </el-button>
     </sticky>
     <!-- 悬浮框 end -->
+
     <div class="createPost-main-container">
       <div class="postInfo-container">
         <el-row>
@@ -58,7 +60,58 @@
         </el-row>
       </div>
     </div>
+
       <hr>
+      <h4 style="margin-top:0;">收支明细</h4>
+      <!-- 表格 start -->
+      <el-table :key='tableKey' :data="listData" v-loading="listLoading" border fit highlight-current-row
+                style="width: 100%;min-height:300px;">
+        <el-table-column align="center" label="序号" width="60">
+          <template slot-scope="scope">
+            <span>{{scope.$index+1}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column align="center" label="类型" min-width="110">
+          <template slot-scope="scope">
+            <span>{{scope.row.type}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column align="center" label="金额" min-width="110">
+          <template slot-scope="scope">
+            <span>{{scope.row.amount}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column align="center" label="收款人" min-width="110">
+          <template slot-scope="scope">
+            <span>{{scope.row.payee}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column align="center" label="付款人" min-width="110">
+          <template slot-scope="scope">
+            <span>{{scope.row.payer}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column align="center" label="创建时间" min-width="130">
+          <template slot-scope="scope">
+            <span>{{scope.row.creattime}}</span>
+          </template>
+        </el-table-column>
+
+      </el-table>
+      <!-- 表格 end -->
+
+      <!-- 分页组件 start -->
+      <div class="pagination-container">
+        <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
+                       :current-page="listQuery.pageNum" :page-sizes="[10,20,30, 50]" :page-size="listQuery.pageSize"
+                       layout="total, sizes, prev, pager, next, jumper" :total="total">
+        </el-pagination>
+      </div>
+      <!-- 分页组件 end -->
+
+      <!-- Tab页签 start -->
+      <hr>
+      <h4 style="margin-top:0;">其他信息</h4>
       <el-tabs v-model="activeName">
         <el-tab-pane label="子合同" name="first">
           <subContract></subContract>
@@ -67,6 +120,7 @@
           <partner></partner>
         </el-tab-pane>
       </el-tabs>
+      <!-- Tab页签 end -->
 
 
     <!-- 弹出框新增合作伙伴 start -->
@@ -113,13 +167,13 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label-width="110px" label="付款人" prop="customerKeyB" class="postInfo-container-item">
+          <el-form-item label-width="110px" label="付款人" prop="payer" class="postInfo-container-item">
             <el-select v-model="temps.payer" required filterable placeholder="请选择">
               <el-option v-for="item in userListOptions" :key="item.customerId" :label="item.customerName" :value="item.customerId">
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label-width="110px" label="收款人" prop="customerKeyB" class="postInfo-container-item">
+          <el-form-item label-width="110px" label="收款人" prop="payee" class="postInfo-container-item">
             <el-select v-model="temps.payee" required filterable placeholder="请选择">
               <el-option v-for="item in userListOptions" :key="item.customerId" :label="item.customerName" :value="item.customerId">
               </el-option>
@@ -148,7 +202,7 @@
 </template>
 <script>
   import Sticky from '@/components/Sticky' // 粘性header组件
-  import { createContractPartner, contractList, createcontractExpnses } from '@/api/contract'
+  import { createContractPartner, contractList, createcontractExpnses, expnsesList } from '@/api/contract'
   import { customerList } from '@/api/customer'
   import { getConfig } from '@/api/user'
   import store from '@/store'
@@ -159,8 +213,10 @@
     components: { Sticky, subContract, partner },
     data: function() {
       return {
+        tableKey: 0,
         activeName: 'first',
         list: null,
+        listData: null,
         total: null,
         listLoading: true,
         type: { type: '\'TYPEC\'' },
@@ -171,7 +227,7 @@
         ],
         listQuery: {
           pageNum: 1,
-          pageSize: 20,
+          pageSize: 10,
           type: undefined,
           income: '',
           title: '',
@@ -250,6 +306,10 @@
           if (!response.data.items) return
           this.userListOptions = response.data.items
         })
+        expnsesList(this.listQuery).then(response => {
+          if (!response.data.items) return
+          this.listData = response.data.items
+        })
       },
       resetTemp() {
         this.temp = {
@@ -272,9 +332,21 @@
           income: '',
           user: '',
           proportions: '',
-          reamrks1: '',
+          remarks1: '',
           status: 'published'
         }
+      },
+      handleFilter() {
+        this.listQuery.pageNum = 1
+        this.getList()
+      },
+      handleSizeChange(val) {
+        this.listQuery.pageSize = val
+        this.getList()
+      },
+      handleCurrentChange(val) {
+        this.listQuery.pageNum = val
+        this.getList()
       },
       handleCreate() {
         this.resetTemp()
@@ -288,6 +360,7 @@
       },
       handleCreatePay() {
         this.resetTempExpnses()
+        this.temps.id = this.$route.query.id
         this.dialogExpnses = '新增收支明细'
         this.dialogExpnsesVisible = true
         this.$nextTick(() => {
@@ -341,5 +414,8 @@
   @import "src/styles/mixin.scss";
   .tab-container{
     margin: 30px;
+  }
+  .el-form-item{
+    margin-bottom: 10px !important;
   }
 </style>

@@ -38,7 +38,7 @@
         <span>{{scope.row.number}}</span>
       </template>
     </el-table-column>
-      <el-table-column align="center" label="子合同编码" width="140">
+      <el-table-column align="center" label="父合同编码" width="140">
         <template slot-scope="scope">
           <span>{{scope.row.parent}}</span>
         </template>
