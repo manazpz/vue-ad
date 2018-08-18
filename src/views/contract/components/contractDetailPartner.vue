@@ -18,6 +18,11 @@
           <span>{{scope.row.money_init}}</span>
         </template>
       </el-table-column>
+      <el-table-column align="center" label="抽成比例" width="120">
+        <template slot-scope="scope">
+          <span>{{scope.row.pro}}%</span>
+        </template>
+      </el-table-column>
       <el-table-column align="center" label="盈利" width="120">
         <template slot-scope="scope">
           <span>{{scope.row.income}}</span>
@@ -58,6 +63,7 @@
 
 <script>
   import { getContract } from '@/api/contract'
+  import { toThousands } from '@/common/common'
   import store from '@/store'
   export default {
     name: 'contractDetailPartner',
@@ -90,6 +96,10 @@
           }
           if (response.code === 200) {
             this.list = response.data.items
+            this.list.forEach(function(c) {
+              c.income = toThousands(c.income)
+              c.money_init = toThousands(c.money_init)
+            })
             this.total = response.data.total
             setTimeout(() => {
               this.listLoading = false

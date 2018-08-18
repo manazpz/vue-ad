@@ -133,17 +133,17 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label-width="110px" label="客户性质" class="postInfo-container-item">
+        <el-form-item label-width="110px" label="客户性质" prop="types" class="postInfo-container-item">
           <el-select v-model="temp.types" style="width: 100px" >
             <el-option v-for="item in typeOptions" :key="item.keyWord" :label="item.name" :value="item.keyWord" >
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label-width="110px" label="当前收益" prop="paid" class="postInfo-container-item">
+        <el-form-item label-width="110px" label="当前收益" class="postInfo-container-item">
           <el-input v-model="temp.income" disabled true></el-input>
         </el-form-item>
         <el-form-item label-width="110px" label="抽成比例" prop="tax" class="postInfo-container-item">
-          <el-input v-model="temp.proportions" required placeholder="请输入抽成比例"></el-input>
+          <el-input type="number" v-model.number="temp.proportions" required placeholder="请输入抽成比例（填写数字）"></el-input>
         </el-form-item>
         <el-form-item label-width="110px" label="摘要"  class="postInfo-container-item">
           <el-input v-model="temp.reamrks1" type="textarea"  :rows="5"  placeholder="请摘要内容"></el-input>
@@ -159,9 +159,9 @@
 
       <!-- 弹出框新增收付款明细 start -->
       <el-dialog :title="dialogExpnses" :visible.sync="dialogExpnsesVisible">
-        <el-form :rules="rules" ref="dataFormExpnses" :model="temps" label-position="left" label-width="70px"
+        <el-form :rules="rule" ref="dataFormExpnses" :model="temps" label-position="left" label-width="70px"
                  style='width: 400px; margin-left:50px;'>
-          <el-form-item label-width="110px" label="类型" class="postInfo-container-item">
+          <el-form-item label-width="110px" label="类型" prop="typePaye" class="postInfo-container-item">
             <el-select v-model="temps.typePaye" required filterable placeholder="请选择">
               <el-option v-for="item in typePayOptions" :key="item.keyWord" :label="item.name" :value="item.keyWord" >
               </el-option>
@@ -180,7 +180,7 @@
             </el-select>
           </el-form-item>
           <el-form-item label-width="110px" label="金额" prop="paid" class="postInfo-container-item">
-            <el-input v-model="temps.amount"></el-input>
+            <el-input type="number" v-model.number ="temps.amount"></el-input>
           </el-form-item>
           <el-form-item label-width="110px" label="摘要"  class="postInfo-container-item">
             <el-input v-model="temps.reamrks1" type="textarea"  :rows="5"  placeholder="请摘要内容"></el-input>
@@ -203,6 +203,7 @@
 <script>
   import Sticky from '@/components/Sticky' // 粘性header组件
   import { createContractPartner, contractList, createcontractExpnses, expnsesList } from '@/api/contract'
+  import { toThousands } from '@/common/common'
   import { customerList } from '@/api/customer'
   import { getConfig } from '@/api/user'
   import store from '@/store'
@@ -266,7 +267,17 @@
         dialogStatus: '',
         dialogExpnsesVisible: false,
         dialogExpnses: '',
-        rules: {}
+        rules: {
+          customerKeyB: [{ required: true, message: '合作伙伴不能为空', trigger: 'change' }],
+          types: [{ required: true, message: '客户性质不能为空', trigger: 'change' }],
+          tax: [{ required: true, message: '抽成比例不能为空', trigger: 'change' }]
+        },
+        rule: {
+          typePaye: [{ required: true, message: '类型不能为空', trigger: 'change' }],
+          payer: [{ required: true, message: '付款人不能为空', trigger: 'change' }],
+          payee: [{ required: true, message: '收款人不能为空', trigger: 'change' }],
+          paid: [{ required: true, message: '金额不能为空', trigger: 'change' }]
+        }
       }
     },
     created() {
@@ -295,6 +306,10 @@
           if (response.code === 200) {
             this.list = response.data.items[0]
             this.total = response.data.total
+            this.list.money_init = toThousands(this.list.money_init)
+            this.list.paid = toThousands(this.list.paid)
+            this.list.income = toThousands(this.list.income)
+            this.list.expenses = toThousands(this.list.expenses)
             setTimeout(() => {
               this.listLoading = false
             }, 1.5 * 1000)
@@ -309,6 +324,9 @@
         expnsesList(this.listQuery).then(response => {
           if (!response.data.items) return
           this.listData = response.data.items
+          this.list.forEach(function(c) {
+            c.amount = toThousands(c.amount)
+          })
         })
       },
       resetTemp() {

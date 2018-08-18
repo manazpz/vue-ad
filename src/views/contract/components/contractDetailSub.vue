@@ -83,6 +83,7 @@
 
 <script>
   import { contractSubList } from '@/api/contract'
+  import { toThousands } from '@/common/common'
   import waves from '@/directive/waves' // 水波纹指令
   import store from '@/store'
   export default {
@@ -142,6 +143,11 @@
           if (response.code === 200) {
             this.list = response.data.items
             this.total = response.data.total
+            this.list.forEach(function(c) {
+              c.money_init = toThousands(c.money_init)
+              c.paid = toThousands(c.paid)
+              c.income = toThousands(c.income)
+            })
             setTimeout(() => {
               this.listLoading = false
             }, 1.5 * 1000)
