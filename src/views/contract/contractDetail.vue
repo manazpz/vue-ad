@@ -127,7 +127,7 @@
     <el-dialog :title="dialogStatus" :visible.sync="dialogFormVisible">
       <el-form :rules="rules" ref="dataForm" :model="temp" label-position="left" label-width="70px"
                style='width: 400px; margin-left:50px;'>
-        <el-form-item label-width="110px" label="合作伙伴" prop="customerKeyB" class="postInfo-container-item">
+        <el-form-item label-width="110px" label="合作伙伴" prop="user" class="postInfo-container-item">
           <el-select v-model="temp.user" required filterable placeholder="请选择">
             <el-option v-for="item in userListOptions" :key="item.customerId" :label="item.customerName" :value="item.customerId">
             </el-option>
@@ -142,7 +142,7 @@
         <el-form-item label-width="110px" label="当前收益" class="postInfo-container-item">
           <el-input v-model="temp.income" disabled true></el-input>
         </el-form-item>
-        <el-form-item label-width="110px" label="抽成比例" prop="tax" class="postInfo-container-item">
+        <el-form-item label-width="110px" label="抽成比例" prop="proportions" class="postInfo-container-item">
           <el-input type="number" v-model.number="temp.proportions" required placeholder="请输入抽成比例（填写数字）"></el-input>
         </el-form-item>
         <el-form-item label-width="110px" label="摘要"  class="postInfo-container-item">
@@ -179,8 +179,8 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label-width="110px" label="金额" prop="paid" class="postInfo-container-item">
-            <el-input type="number" v-model.number ="temps.amount"></el-input>
+          <el-form-item label-width="110px" label="金额" prop="amount" class="postInfo-container-item">
+            <el-input type="number" v-model.number ="temps.amount" required></el-input>
           </el-form-item>
           <el-form-item label-width="110px" label="摘要"  class="postInfo-container-item">
             <el-input v-model="temps.reamrks1" type="textarea"  :rows="5"  placeholder="请摘要内容"></el-input>
@@ -268,15 +268,15 @@
         dialogExpnsesVisible: false,
         dialogExpnses: '',
         rules: {
-          customerKeyB: [{ required: true, message: '合作伙伴不能为空', trigger: 'change' }],
+          user: [{ required: true, message: '合作伙伴不能为空', trigger: 'change' }],
           types: [{ required: true, message: '客户性质不能为空', trigger: 'change' }],
-          tax: [{ required: true, message: '抽成比例不能为空', trigger: 'change' }]
+          proportions: [{ required: true, message: '抽成比例不能为空', trigger: 'change' }]
         },
         rule: {
           typePaye: [{ required: true, message: '类型不能为空', trigger: 'change' }],
           payer: [{ required: true, message: '付款人不能为空', trigger: 'change' }],
           payee: [{ required: true, message: '收款人不能为空', trigger: 'change' }],
-          paid: [{ required: true, message: '金额不能为空', trigger: 'change' }]
+          amount: [{ required: true, message: '金额不能为空', trigger: 'change' }]
         }
       }
     },
@@ -391,7 +391,6 @@
             this.listLoading = true
             createContractPartner(this.temp).then(response => {
               if (response.code === 200) {
-                this.list.unshift(this.temp)
                 this.listLoading = false
                 this.dialogFormVisible = false
                 this.$notify({
@@ -402,6 +401,7 @@
                 })
               }
             })
+            this.getList()
           }
         })
       },

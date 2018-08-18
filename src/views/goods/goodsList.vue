@@ -121,22 +121,22 @@
         <el-form-item label-width="110px" label="商品名称" prop="name" class="postInfo-container-item">
           <el-input v-model="temp.name" required placeholder="请输入商品名称"></el-input>
         </el-form-item>
-        <el-form-item label-width="110px" label="商品别名" class="postInfo-container-item">
-          <el-input v-model="temp.alias" placeholder="请输入商品别名"></el-input>
+        <el-form-item label-width="110px" label="商品别名" prop="alias" class="postInfo-container-item">
+          <el-input v-model="temp.alias" required placeholder="请输入商品别名"></el-input>
         </el-form-item>
-        <el-form-item label-width="110px" label="商品类型" class="postInfo-container-item">
-          <el-select clearable v-model="temp.typeKey">
+        <el-form-item label-width="110px" label="商品类型" prop="typeKey" class="postInfo-container-item">
+          <el-select required clearable v-model="temp.typeKey">
             <el-option v-for="item in calendarTypeOptions" :key="item.keyWord" :label="item.name" :value="item.keyWord" >
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label-width="110px" label="单位" class="postInfo-container-item">
-          <el-select clearable v-model="temp.unitKey">
+        <el-form-item label-width="110px" label="单位" prop="unitKey" class="postInfo-container-item">
+          <el-select required clearable v-model="temp.unitKey">
             <el-option v-for="item in unitTypeOptions" :key="item.keyWord" :label="item.name" :value="item.keyWord" >
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label-width="110px" label="价格" class="postInfo-container-item">
+        <el-form-item label-width="110px" label="价格" prop="price" class="postInfo-container-item">
           <el-input v-model="temp.price" placeholder="请输入价格"></el-input>
         </el-form-item>
       </el-form>
@@ -198,7 +198,11 @@
         },
         dialogPvVisible: false,
         rules: {
-          name: [{ required: true, message: '商品名不为空', trigger: 'change' }]
+          name: [{ required: true, message: '商品名不为空', trigger: 'change' }],
+          alias: [{ required: true, message: '商品别名不为空', trigger: 'change' }],
+          typeKey: [{ required: true, message: '商品类型不为空', trigger: 'change' }],
+          unitKey: [{ required: true, message: '商品单位不为空', trigger: 'change' }],
+          price: [{ required: true, message: '商品单价不为空', trigger: 'change' }]
         }
       }
     },
