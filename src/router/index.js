@@ -32,7 +32,7 @@ export const constantRouterMap = [
       path: 'dashboard',
       component: () => import('@/views/dashboard/index'),
       name: 'dashboard',
-      meta: { title: 'dashboard', img: 'favicon.ico', noCache: true }
+      meta: { title: 'dashboard', img: process.env.RESOURCE_URL + '/favicon.jpg', noCache: true }
     }]
   },
   {
@@ -134,6 +134,12 @@ export const asyncRouterMap = [
       hidden: true,
       name: 'changePwd',
       meta: { title: 'changePwd' }
+    },
+    {
+      path: 'logoUpload',
+      component: () => import('@/views/user/basic/logoUpload'),
+      name: 'logoUpload',
+      meta: { title: 'logoUpload' }
     }]
   }
 ]

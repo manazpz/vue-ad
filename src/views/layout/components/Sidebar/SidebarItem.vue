@@ -7,7 +7,7 @@
         <span v-if="onlyOneChild.meta&&onlyOneChild.meta.title" slot="title">{{generateTitle(onlyOneChild.meta.title)}}</span>
       </el-menu-item>
       <el-menu-item v-if="hasDashboard(onlyOneChild.name)" :index="resolvePath(onlyOneChild.path)" :class="{'submenu-title-noDropdown':isNest}">
-        <img v-if="onlyOneChild.meta&&onlyOneChild.meta.img&&hasSidebar()" :src="resolvePath(onlyOneChild.meta.img)" style="height: 30px; width:30px">
+        <img v-if="onlyOneChild.meta&&onlyOneChild.meta.img&&hasSidebar()" :src="onlyOneChild.meta.img" style="height: 30px; width:30px">
         <span v-if="onlyOneChild.meta&&onlyOneChild.meta.title" style="font-size: 20px" slot="title">{{generateTitle('ms')}}</span>
       </el-menu-item>
     </router-link>

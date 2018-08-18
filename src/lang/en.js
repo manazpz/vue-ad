@@ -2,6 +2,7 @@ export default {
   route: {
     ms: 'MS',
     dashboard: 'Dashboard',
+    logoUpload: 'Logo Upload',
     avatarUpload: 'Avatar Upload',
     errorPages: 'Error Pages',
     page401: '401',

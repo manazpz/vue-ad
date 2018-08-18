@@ -2,6 +2,7 @@ export default {
   route: {
     ms: '管理系统',
     dashboard: '首页',
+    logoUpload: 'LOGO上传',
     avatarUpload: '头像上传',
     errorPages: '错误页面',
     page401: '401',

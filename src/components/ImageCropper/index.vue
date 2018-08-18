@@ -838,7 +838,7 @@ export default {
         }],
         transformResponse: [function (data) {
           that.progress = 100
-          return data;
+          return JSON.parse(data);
         }],
         data: fmData
       }).then(resData => {
