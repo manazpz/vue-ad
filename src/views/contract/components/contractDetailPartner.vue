@@ -63,7 +63,7 @@
 
 <script>
   import { getContract } from '@/api/contract'
-  import { toThousands } from '@/common/common'
+  import { toThousands } from '@/utils/common'
   import store from '@/store'
   export default {
     name: 'contractDetailPartner',

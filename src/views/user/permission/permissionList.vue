@@ -132,7 +132,7 @@
 <script>
   import { permissionList, getConfig, insertPermission, updatePermission } from '@/api/user'
   import waves from '@/directive/waves' // 水波纹指令
-  import { keyToValue } from '@/common/common'
+  import { keyToValue } from '@/utils/common'
   import store from '@/store'
 
   const calendarTypeOptions = store.getters.permission_types

@@ -83,7 +83,7 @@
 
 <script>
   import { contractSubList } from '@/api/contract'
-  import { toThousands } from '@/common/common'
+  import { toThousands } from '@/utils/common'
   import waves from '@/directive/waves' // 水波纹指令
   import store from '@/store'
   export default {

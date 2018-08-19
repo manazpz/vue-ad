@@ -205,7 +205,7 @@
 
 <script>
   import { contractList, createContract, updateContract, deleteContract, createcontractSub } from '@/api/contract'
-  import { toThousands, commafyback } from '@/common/common'
+  import { toThousands, commafyback } from '@/utils/common'
   import { customerList } from '@/api/customer'
   import { getConfig } from '@/api/user'
   import waves from '@/directive/waves' // 水波纹指令

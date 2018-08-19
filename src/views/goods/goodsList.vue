@@ -153,7 +153,8 @@
 
 <script>
   import { goodsList, createGoods, updateGoods, deleteGoods } from '@/api/goods'
-  import { keyToValue, toThousands, checkNo } from '@/common/common'
+  import { keyToValue, toThousands } from '@/utils/common'
+  import { checkNo } from '@/utils/validate'
   import { getConfig } from '@/api/user'
   import waves from '@/directive/waves' // 水波纹指令
   import store from '@/store'

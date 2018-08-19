@@ -62,7 +62,7 @@
   import { getConfig } from '@/api/user'
   import { insertCustomer } from '@/api/customer'
   import store from '@/store'
-  import { checkIdCard, checkPhone, checkBankNo } from '@/common/common'
+  import { checkIdCard, checkPhone, checkBankNo } from '@/utils/validate'
 
   const defaultForm = {
     customerId: undefined,

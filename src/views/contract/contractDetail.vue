@@ -203,7 +203,7 @@
 <script>
   import Sticky from '@/components/Sticky' // 粘性header组件
   import { createContractPartner, contractList, createcontractExpnses, expnsesList } from '@/api/contract'
-  import { toThousands } from '@/common/common'
+  import { toThousands } from '@/utils/common'
   import { customerList } from '@/api/customer'
   import { getConfig } from '@/api/user'
   import store from '@/store'

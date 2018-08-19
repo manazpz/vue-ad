@@ -153,7 +153,8 @@
 
 <script>
   import { getConfig, userList, deleteUser, insertUser, updateUser, changePwd } from '@/api/user'
-  import { keyToValue, checkPhone } from '@/common/common'
+  import { keyToValue } from '@/utils/common'
+  import { checkPhone } from '@/utils/validate'
   import waves from '@/directive/waves' // 水波纹指令
   import store from '@/store'
 

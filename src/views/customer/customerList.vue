@@ -176,7 +176,8 @@
   import { getConfig } from '@/api/user'
   import waves from '@/directive/waves' // 水波纹指令
   import store from '@/store'
-  import { keyToValue, checkIdCard, checkPhone, checkBankNo } from '@/common/common'
+  import { keyToValue } from '@/utils/common'
+  import { checkIdCard, checkPhone, checkBankNo } from '@/utils/validate'
 
   export default {
     name: 'customerList',
