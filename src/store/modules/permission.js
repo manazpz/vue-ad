@@ -35,8 +35,8 @@ const permission = {
   state: {
     routers: constantRouterMap,
     addRouters: [],
-    types: [{ key: 'ACTION', name: '操作权限[ACTION]' }, { key: 'DATA', name: '数据权限[DATA]' },
-      { key: 'PAGE', name: '页面权限[PAGE]' }, { key: 'MENU', name: '菜单权限[MENU]' }, { key: 'URL', name: '链接权限[URL]' }]
+    types: [{ keyWord: 'ACTION', name: '操作权限[ACTION]' }, { keyWord: 'DATA', name: '数据权限[DATA]' },
+      { keyWord: 'PAGE', name: '页面权限[PAGE]' }, { keyWord: 'MENU', name: '菜单权限[MENU]' }, { keyWord: 'URL', name: '链接权限[URL]' }]
   },
   mutations: {
     SET_ROUTERS: (state, routers) => {

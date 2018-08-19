@@ -38,26 +38,17 @@
 </template>
 
 <script>
-  import { generate } from '@/utils/i18n'
-
   export default {
     name: 'changePwd',
     data() {
-      const validatePassword = (rule, value, callback) => {
-        if (value.length < 6) {
-          callback(new Error(generate(this, 'login.passworderror')))
-        } else {
-          callback()
-        }
-      }
       return {
         parmasForm: {
           oldPwd: '',
           newPwd: ''
         },
         rules: {
-          oldPwd: [{ required: true, trigger: 'blur', validator: validatePassword }],
-          newPwd: [{ required: true, trigger: 'blur', validator: validatePassword }]
+          oldPwd: [{ required: true, trigger: 'blur', message: '旧密码不为空！' }],
+          newPwd: [{ required: true, trigger: 'blur', message: '新密码不为空！' }]
         },
         passwordType: 'password',
         loading: false

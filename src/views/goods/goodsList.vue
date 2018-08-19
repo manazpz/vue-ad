@@ -29,12 +29,12 @@
     <!-- 表格 start -->
     <el-table :key='tableKey' :data="list" v-loading="listLoading" border fit highlight-current-row
               style="width: 100%;min-height:1000px;">
-      <el-table-column align="center" label="序号" width="60">
+      <el-table-column align="center" label="序号" width="50">
         <template slot-scope="scope">
           <span>{{scope.$index+1}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="商品编码" width="140">
+      <el-table-column align="center" label="商品编码" width="130">
         <template slot-scope="scope">
           <span>{{scope.row.code}}</span>
         </template>
@@ -54,14 +54,14 @@
           <span>{{scope.row.typeName}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="单位" width="90">
+      <el-table-column align="center" label="单位" width="70">
         <template slot-scope="scope">
           <span>{{scope.row.unitName}}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" label="价格" width="90">
         <template slot-scope="scope">
-          <span>{{scope.row.price}}</span>
+          <span>{{scope.row.price | priceFilter}}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" label="创建人" width="90">
@@ -124,14 +124,14 @@
         <el-form-item label-width="110px" label="商品别名" prop="alias" class="postInfo-container-item">
           <el-input v-model="temp.alias" required placeholder="请输入商品别名"></el-input>
         </el-form-item>
-        <el-form-item label-width="110px" label="商品类型" prop="typeKey" class="postInfo-container-item">
-          <el-select required clearable v-model="temp.typeKey">
+        <el-form-item label-width="110px" label="商品类型" class="postInfo-container-item">
+          <el-select v-model="temp.typeKey">
             <el-option v-for="item in calendarTypeOptions" :key="item.keyWord" :label="item.name" :value="item.keyWord" >
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label-width="110px" label="单位" prop="unitKey" class="postInfo-container-item">
-          <el-select required clearable v-model="temp.unitKey">
+        <el-form-item label-width="110px" label="单位" class="postInfo-container-item">
+          <el-select v-model="temp.unitKey">
             <el-option v-for="item in unitTypeOptions" :key="item.keyWord" :label="item.name" :value="item.keyWord" >
             </el-option>
           </el-select>
@@ -142,8 +142,8 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">{{$t('table.cancel')}}</el-button>
-        <el-button v-if="dialogStatus=='新增商品'" type="primary" @click="createData">{{$t('table.confirm')}}</el-button>
-        <el-button v-else type="primary" @click="updateData">{{$t('table.confirm')}}</el-button>
+        <el-button v-if="dialogStatus=='新增商品'" v-loading="btnLoading" type="primary" @click="createData">{{$t('table.confirm')}}</el-button>
+        <el-button v-else type="primary" v-loading="btnLoading" @click="updateData">{{$t('table.confirm')}}</el-button>
       </div>
     </el-dialog>
     <!-- 弹出框 end -->
@@ -153,6 +153,7 @@
 
 <script>
   import { goodsList, createGoods, updateGoods, deleteGoods } from '@/api/goods'
+  import { keyToValue, toThousands, checkNo } from '@/common/common'
   import { getConfig } from '@/api/user'
   import waves from '@/directive/waves' // 水波纹指令
   import store from '@/store'
@@ -168,6 +169,7 @@
         list: null,
         total: null,
         listLoading: true,
+        btnLoading: false,
         listQuery: {
           pageNum: 1,
           pageSize: 20,
@@ -180,30 +182,27 @@
         calendarTypeOptions: [],
         unitTypeOptions: [],
         sortOptions: [{ label: '时间正序', key: 'lastCreateTime ASC' }, { label: '时间倒序', key: 'lastCreateTime DESC' }],
+        dialogFormVisible: false,
+        dialogStatus: '',
         temp: {
-          code: undefined,
-          outCode: '',
+          id: undefined,
           name: '',
           alias: '',
-          typeKey: '',
-          unit: '',
+          typeKey: 'GG',
+          unitKey: 'UP',
           price: '',
           status: 'published'
         },
-        dialogFormVisible: false,
-        dialogStatus: '',
-        textMap: {
-          update: 'Edit',
-          create: 'Create'
-        },
-        dialogPvVisible: false,
         rules: {
-          name: [{ required: true, message: '商品名不为空', trigger: 'change' }],
-          alias: [{ required: true, message: '商品别名不为空', trigger: 'change' }],
-          typeKey: [{ required: true, message: '商品类型不为空', trigger: 'change' }],
-          unitKey: [{ required: true, message: '商品单位不为空', trigger: 'change' }],
-          price: [{ required: true, message: '商品单价不为空', trigger: 'change' }]
+          name: [{ required: true, message: '商品名不为空', trigger: 'blur' }],
+          alias: [{ required: true, message: '商品别名不为空', trigger: 'blur' }],
+          price: [{ required: true, validator: checkNo, trigger: 'blur' }]
         }
+      }
+    },
+    filters: {
+      priceFilter(value) {
+        return toThousands(value)
       }
     },
     watch: {
@@ -280,8 +279,8 @@
           id: undefined,
           name: '',
           alias: '',
-          typeKey: '',
-          unitKey: '',
+          typeKey: 'GG',
+          unitKey: 'UP',
           price: '',
           status: 'published'
         }
@@ -297,17 +296,27 @@
       createData() {
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
-            this.listLoading = true
+            this.btnLoading = true
             createGoods(this.temp).then(response => {
-              this.dialogFormVisible = false
-              this.$notify({
-                title: '成功',
-                message: '创建成功',
-                type: 'success',
-                duration: 2000
-              })
+              if (response.code === 50001) {
+                store.dispatch('GetRefreshToken').then(() => {
+                  this.createData()
+                })
+              }
+              if (response.code === 200) {
+                this.getList()
+                this.btnLoading = false
+                this.dialogFormVisible = false
+                this.$notify({
+                  title: '成功',
+                  message: '创建成功',
+                  type: 'success',
+                  duration: 2000
+                })
+              }
+            }).catch(() => {
+              this.btnLoading = false
             })
-            this.getList()
           }
         })
       },
@@ -323,24 +332,34 @@
       updateData() {
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
-            const tempData = Object.assign({}, this.temp)
-            tempData.timestamp = +new Date(tempData.timestamp) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
-            this.listLoading = true
-            updateGoods(tempData).then(() => {
-              for (const v of this.list) {
-                if (v.id === this.temp.id) {
-                  const index = this.list.indexOf(v)
-                  this.list.splice(index, 1, this.temp)
-                  break
-                }
+            this.btnLoading = true
+            updateGoods(this.temp).then(response => {
+              if (response.code === 50001) {
+                store.dispatch('GetRefreshToken').then(() => {
+                  this.updateData()
+                })
               }
-              this.dialogFormVisible = false
-              this.$notify({
-                title: '成功',
-                message: '更新成功',
-                type: 'success',
-                duration: 2000
-              })
+              if (response.code === 200) {
+                for (const v of this.list) {
+                  if (v.goodsId === this.temp.goodsId) {
+                    const index = this.list.indexOf(v)
+                    this.temp.typeName = keyToValue(this.calendarTypeOptions)[this.temp.typeKey]
+                    this.temp.unitName = keyToValue(this.unitTypeOptions)[this.temp.unitKey]
+                    this.list.splice(index, 1, this.temp)
+                    break
+                  }
+                }
+                this.btnLoading = false
+                this.dialogFormVisible = false
+                this.$notify({
+                  title: '成功',
+                  message: '更新成功',
+                  type: 'success',
+                  duration: 2000
+                })
+              }
+            }).catch(() => {
+              this.btnLoading = false
             })
           }
         })

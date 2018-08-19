@@ -4,7 +4,7 @@
     <!-- 过滤条件 start -->
     <div class="filter-container">
       <el-input @keyup.enter.native="handleFilter" style="width: 200px;" class="filter-item"
-                :placeholder="$t('customer.customerUser')" v-model="listQuery.customerUser">
+                :placeholder="$t('customer.customerName')" v-model="listQuery.customerName">
       </el-input>
       <el-select clearable style="width: 90px" class="filter-item" v-model="listQuery.sex"
                  :placeholder="$t('customer.sex')">
@@ -59,11 +59,6 @@
       <el-table-column align="center" :label="$t('customer.customerName')" width="90">
         <template slot-scope="scope">
           <span>{{scope.row.customerName}}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" :label="$t('customer.customerUser')" min-width="140">
-        <template slot-scope="scope">
-          <span>{{scope.row.customerUser}}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" :label="$t('customer.sex')" width="60">
@@ -137,11 +132,8 @@
         <el-form-item label-width="110px" :label="$t('customer.customerName')" prop="customerName" class="postInfo-container-item">
           <el-input v-model="temp.customerName" required placeholder="请输入客户名称"></el-input>
         </el-form-item>
-        <el-form-item label-width="110px" :label="$t('customer.customerUser')" class="postInfo-container-item">
-          <el-input v-model="temp.customerUser" placeholder="账号，可与手机号一致"></el-input>
-        </el-form-item>
-        <el-form-item label-width="110px" :label="$t('customer.code')" class="postInfo-container-item">
-          <el-input v-model="temp.code" placeholder="请输入手机号码"></el-input>
+        <el-form-item label-width="110px" :label="$t('customer.code')" prop="code" class="postInfo-container-item">
+          <el-input v-model="temp.code" required placeholder="请输入手机号码"></el-input>
         </el-form-item>
         <el-form-item label-width="110px" :label="$t('customer.sex')" class="postInfo-container-item">
           <el-select v-model="temp.sex" style="width: 100px" >
@@ -149,29 +141,29 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label-width="110px" :label="$t('customer.idCard')" class="postInfo-container-item">
+        <el-form-item label-width="110px" :label="$t('customer.idCard')" prop="idCard" class="postInfo-container-item">
           <el-input v-model="temp.idCard" placeholder="请输入身份证"></el-input>
         </el-form-item>
-        <el-form-item label-width="110px" :label="$t('customer.bank')" class="postInfo-container-item">
-          <el-input v-model="temp.bank" placeholder="请输入开户行"></el-input>
+        <el-form-item label-width="110px" :label="$t('customer.bank')" prop="bank" class="postInfo-container-item">
+          <el-input v-model="temp.bank" required placeholder="请输入开户行"></el-input>
         </el-form-item>
-        <el-form-item label-width="110px" :label="$t('customer.bankNo')" class="postInfo-container-item">
-          <el-input v-model="temp.bankNo" placeholder="请输入开户行账号"></el-input>
+        <el-form-item label-width="110px" :label="$t('customer.bankNo')" prop="bankNo" class="postInfo-container-item">
+          <el-input v-model="temp.bankNo" required placeholder="请输入开户行账号"></el-input>
         </el-form-item>
         <el-form-item label-width="110px" :label="$t('customer.typeName')" class="postInfo-container-item">
-          <el-select clearable v-model="temp.typeKey">
+          <el-select v-model="temp.typeKey">
             <el-option v-for="item in calendarTypeOptions" :key="item.keyWord" :label="item.name" :value="item.keyWord" >
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label-width="110px" :label="$t('customer.address')">
-          <el-input type="textarea"  :rows="5" placeholder="请输入内容" v-model="temp.address" style="width: 500px">
+        <el-form-item label-width="110px" :label="$t('customer.address')" prop="address">
+          <el-input type="textarea" :rows="5" placeholder="请输入内容" v-model="temp.address" required style="width: 500px">
           </el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">{{$t('table.cancel')}}</el-button>
-        <el-button type="primary" @click="updateData">{{$t('table.confirm')}}</el-button>
+        <el-button type="primary" v-loading="btnLoading" @click="updateData">{{$t('table.confirm')}}</el-button>
       </div>
     </el-dialog>
     <!-- 编辑弹出框 end -->
@@ -184,6 +176,7 @@
   import { getConfig } from '@/api/user'
   import waves from '@/directive/waves' // 水波纹指令
   import store from '@/store'
+  import { keyToValue, checkIdCard, checkPhone, checkBankNo } from '@/common/common'
 
   export default {
     name: 'customerList',
@@ -196,12 +189,12 @@
         list: null,
         total: null,
         listLoading: true,
+        btnLoading: false,
         listQuery: {
           pageNum: 1,
           pageSize: 20,
           customerName: undefined,
           sex: undefined,
-          code: undefined,
           typeKey: undefined,
           sort: 'lastCreateTime DESC'
         },
@@ -218,14 +211,19 @@
           idCard: '',
           bank: '',
           bankNo: '',
-          typeKey: '',
+          typeKey: 'PC',
           address: '',
           status: 'published'
         },
         dialogFormVisible: false,
         dialogStatus: '',
         rules: {
-          customerName: [{ required: true, message: '客户名不为空', trigger: 'change' }]
+          customerName: [{ required: true, message: '客户名不为空', trigger: 'blur' }],
+          code: [{ required: true, validator: checkPhone, trigger: 'blur' }],
+          idCard: [{ required: false, validator: checkIdCard, trigger: 'blur' }],
+          bank: [{ required: true, message: '客户开户行不为空', trigger: 'blur' }],
+          bankNo: [{ required: true, validator: checkBankNo, trigger: 'blur' }],
+          address: [{ required: true, message: '客户地址不为空', trigger: 'blur' }]
         }
       }
     },
@@ -309,7 +307,7 @@
       updateData() {
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
-            this.listLoading = true
+            this.btnLoading = true
             updateCustomer(this.temp).then(response => {
               if (response.code === 50001) {
                 store.dispatch('GetRefreshToken').then(() => {
@@ -318,13 +316,14 @@
               }
               if (response.code === 200) {
                 for (const v of this.list) {
-                  if (v.id === this.temp.id) {
+                  if (v.customerId === this.temp.customerId) {
                     const index = this.list.indexOf(v)
+                    this.temp.typeName = keyToValue(this.calendarTypeOptions)[this.temp.typeKey]
                     this.list.splice(index, 1, this.temp)
                     break
                   }
                 }
-                this.listLoading = false
+                this.btnLoading = false
                 this.dialogFormVisible = false
                 this.$notify({
                   title: '成功',
@@ -334,7 +333,7 @@
                 })
               }
             }).catch(() => {
-              this.listLoading = false
+              this.btnLoading = false
             })
           }
         })

@@ -37,34 +37,18 @@
 
 <script>
   import LangSelect from '@/components/LangSelect'
-  import { generate } from '@/utils/i18n'
-
   export default {
     components: { LangSelect },
     name: 'login',
     data() {
-      const validateUsername = (rule, value, callback) => {
-        if (value.length < 1) {
-          callback(new Error(generate(this, 'login.usernameerror')))
-        } else {
-          callback()
-        }
-      }
-      const validatePassword = (rule, value, callback) => {
-        if (value.length < 6) {
-          callback(new Error(generate(this, 'login.passworderror')))
-        } else {
-          callback()
-        }
-      }
       return {
         loginForm: {
           username: '',
           password: ''
         },
         loginRules: {
-          username: [{ required: true, trigger: 'blur', validator: validateUsername }],
-          password: [{ required: true, trigger: 'blur', validator: validatePassword }]
+          username: [{ required: true, trigger: 'blur', message: '账户不为空！' }],
+          password: [{ required: true, trigger: 'blur', message: '密码不为空！' }]
         },
         passwordType: 'password',
         loading: false

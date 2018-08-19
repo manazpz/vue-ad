@@ -102,7 +102,7 @@
         </el-form-item>
         <el-form-item label-width="110px" :label="$t('permission.type')" class="postInfo-container-item">
           <el-select v-model="temp.type" style="width: 200px" >
-            <el-option v-for="item in calendarTypeOptions" :key="item.key" :label="item.name" :value="item.key" >
+            <el-option v-for="item in calendarTypeOptions" :key="item.keyWord" :label="item.name" :value="item.keyWord" >
             </el-option>
           </el-select>
         </el-form-item>
@@ -121,7 +121,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">{{$t('table.cancel')}}</el-button>
-        <el-button type="primary" @click="createData">{{$t('table.confirm')}}</el-button>
+        <el-button type="primary" v-loading="btnLoading" @click="createData">{{$t('table.confirm')}}</el-button>
       </div>
     </el-dialog>
     <!-- 编辑弹出框 end -->
@@ -132,13 +132,10 @@
 <script>
   import { permissionList, getConfig, insertPermission, updatePermission } from '@/api/user'
   import waves from '@/directive/waves' // 水波纹指令
+  import { keyToValue } from '@/common/common'
   import store from '@/store'
 
   const calendarTypeOptions = store.getters.permission_types
-  const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
-    acc[cur.key] = cur.name
-    return acc
-  }, {})
 
   export default {
     name: 'permissionList',
@@ -151,6 +148,7 @@
         list: null,
         total: null,
         listLoading: true,
+        btnLoading: false,
         listQuery: {
           pageNum: 1,
           pageSize: 20,
@@ -175,13 +173,13 @@
         dialogFormVisible: false,
         dialogStatus: '',
         rules: {
-          name: [{ required: true, message: '不为空', trigger: 'change' }]
+          name: [{ required: true, message: '名字不为空', trigger: 'blur' }]
         }
       }
     },
     filters: {
       typeFilter(type) {
-        return calendarTypeKeyValue[type]
+        return keyToValue(calendarTypeOptions)[type]
       }
     },
     created() {
@@ -273,7 +271,7 @@
       createData() {
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
-            this.listLoading = true
+            this.btnLoading = true
             insertPermission(this.temp).then(response => {
               if (response.code === 50001) {
                 store.dispatch('GetRefreshToken').then(() => {
@@ -281,8 +279,8 @@
                 })
               }
               if (response.code === 200) {
-                this.list.unshift(this.temp)
-                this.listLoading = false
+                this.getList()
+                this.btnLoading = false
                 this.dialogFormVisible = false
                 this.$notify({
                   title: '成功',
@@ -292,7 +290,7 @@
                 })
               }
             }).catch(() => {
-              this.listLoading = false
+              this.btnLoading = false
             })
           }
         })

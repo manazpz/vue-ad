@@ -22,6 +22,7 @@ import Layout from '../views/layout/Layout'
 **/
 export const constantRouterMap = [
   { path: '/login', component: () => import('@/views/login/index'), hidden: true },
+
   { path: '/404', component: () => import('@/views/errorPage/404'), hidden: true },
 
   {
@@ -34,14 +35,24 @@ export const constantRouterMap = [
       name: 'dashboard',
       meta: { title: 'dashboard', img: process.env.RESOURCE_URL + '/favicon.jpg', noCache: true }
     }]
-  },
+  }
+]
+
+export default new Router({
+  // mode: 'history', //后端支持可开
+  scrollBehavior: () => ({ y: 0 }),
+  routes: constantRouterMap
+})
+
+export const asyncRouterMap = [
   {
     path: '/contract',
     component: Layout,
     redirect: '/contract/list',
     meta: {
       title: 'contract',
-      icon: 'contract'
+      icon: 'contract',
+      roles: ['AM', 'CN']
     },
     children: [{
       path: 'list',
@@ -57,10 +68,12 @@ export const constantRouterMap = [
       meta: { title: 'contractDetail', noCache: true }
     }]
   },
+
   {
     path: '/goods',
     component: Layout,
     redirect: '/goods/list',
+    meta: { roles: ['AM', 'GM'] },
     children: [{
       path: 'list',
       component: () => import('@/views/goods/goodsList'),
@@ -75,7 +88,8 @@ export const constantRouterMap = [
     redirect: '/customer/list',
     meta: {
       title: 'customer',
-      icon: 'customer'
+      icon: 'customer',
+      roles: ['AM', 'CM']
     },
     children: [{
       path: 'list',
@@ -89,16 +103,8 @@ export const constantRouterMap = [
       name: 'customerEdit',
       meta: { title: 'customerEdit' }
     }]
-  }
-]
+  },
 
-export default new Router({
-  // mode: 'history', //后端支持可开
-  scrollBehavior: () => ({ y: 0 }),
-  routes: constantRouterMap
-})
-
-export const asyncRouterMap = [
   {
     path: '/user',
     component: Layout,
@@ -107,7 +113,7 @@ export const asyncRouterMap = [
     meta: {
       title: 'user',
       icon: 'people',
-      roles: ['AD']
+      roles: ['AM', 'UM']
     },
     children: [{
       path: 'list',

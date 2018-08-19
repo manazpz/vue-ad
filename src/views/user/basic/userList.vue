@@ -39,17 +39,17 @@
           <span>{{scope.$index+1}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" :label="$t('user.nickName')" width="90">
+      <el-table-column align="center" :label="$t('user.nickName')" width="110">
         <template slot-scope="scope">
           <span>{{scope.row.nickName}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" :label="$t('user.userName')" min-width="140">
+      <el-table-column align="center" :label="$t('user.userName')" min-width="110">
         <template slot-scope="scope">
           <span>{{scope.row.userName}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" :label="$t('user.phone')" width="110">
+      <el-table-column align="center" :label="$t('user.phone')" width="120">
         <template slot-scope="scope">
           <span>{{scope.row.phone}}</span>
         </template>
@@ -59,22 +59,17 @@
           <span>{{scope.row.name}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" :label="$t('user.idCard')" width="110">
-        <template slot-scope="scope">
-          <span>{{scope.row.idCard}}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" :label="$t('user.statusName')" width="90">
+      <el-table-column align="center" :label="$t('user.statusName')" width="110">
         <template slot-scope="scope">
           <span>{{scope.row.statusName}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" :label="$t('user.createTime')" min-width="100">
+      <el-table-column align="center" :label="$t('user.createTime')" min-width="110">
         <template slot-scope="scope">
           <span>{{scope.row.createTime}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" :label="$t('user.updateTime')" min-width="100">
+      <el-table-column align="center" :label="$t('user.updateTime')" min-width="110">
         <template slot-scope="scope">
           <span>{{scope.row.updateTime}}</span>
         </template>
@@ -124,22 +119,22 @@
         <el-form-item label-width="110px" :label="$t('user.nickName')" prop="nickName" class="postInfo-container-item">
           <el-input v-model="temp.nickName" required placeholder="请输入昵称"></el-input>
         </el-form-item>
-        <el-form-item label-width="110px" :label="$t('user.userName')" prop="customerName" class="postInfo-container-item">
-          <el-input v-if="dialogStatus=='创建用户'" v-model="temp.userName" required placeholder="用户名,可与手机一致"></el-input>
+        <el-form-item label-width="110px" :label="$t('user.userName')" prop="userName" class="postInfo-container-item">
+          <el-input v-if="dialogStatus=='创建用户'" v-model="temp.userName" required placeholder="请输入用户名"></el-input>
           <el-input v-else v-model="temp.userName" :disabled="true"></el-input>
         </el-form-item>
-        <el-form-item v-if="dialogStatus=='创建用户'" label-width="110px" :label="$t('user.password')" prop="customerName" class="postInfo-container-item">
+        <el-form-item v-if="dialogStatus=='创建用户'" label-width="110px" :label="$t('user.password')" prop="password" class="postInfo-container-item">
           <el-input name="password" :type="passwordType" @keyup.enter.native="handleLogin" v-model="temp.password" autoComplete="on"
-                    :placeholder="请输入密码" />
+                    placeholder="请输入密码" />
           <span class="show-pwd" @click="showPwd">
             <svg-icon icon-class="eye" />
           </span>
         </el-form-item>
-        <el-form-item label-width="110px" :label="$t('user.phone')" class="postInfo-container-item">
+        <el-form-item label-width="110px" :label="$t('user.phone')" prop="phone" class="postInfo-container-item">
           <el-input v-model="temp.phone" placeholder="请输入手机号"></el-input>
         </el-form-item>
-        <el-form-item label-width="110px" :label="$t('user.statusName')" class="postInfo-container-item">
-          <el-select clearable v-model="temp.status" :disabled="true">
+        <el-form-item label-width="110px" :label="$t('user.statusName')" prop="status" class="postInfo-container-item">
+          <el-select clearable v-model="temp.status" >
             <el-option v-for="item in calendarTypeOptions" :key="item.keyWord" :label="item.name" :value="item.keyWord" >
             </el-option>
           </el-select>
@@ -147,8 +142,8 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">{{$t('table.cancel')}}</el-button>
-        <el-button v-if="dialogStatus=='创建用户'" type="primary" @click="createData">{{$t('table.confirm')}}</el-button>
-        <el-button v-else type="primary" @click="updateData">{{$t('table.confirm')}}</el-button>
+        <el-button v-if="dialogStatus=='创建用户'" type="primary" v-loading="btnLoading" @click="createData">{{$t('table.confirm')}}</el-button>
+        <el-button v-else type="primary" v-loading="btnLoading" @click="updateData">{{$t('table.confirm')}}</el-button>
       </div>
     </el-dialog>
     <!-- 编辑弹出框 end -->
@@ -158,11 +153,12 @@
 
 <script>
   import { getConfig, userList, deleteUser, insertUser, updateUser, changePwd } from '@/api/user'
+  import { keyToValue, checkPhone } from '@/common/common'
   import waves from '@/directive/waves' // 水波纹指令
   import store from '@/store'
 
   export default {
-    name: 'customerList',
+    name: 'userList',
     directives: {
       waves
     },
@@ -172,6 +168,7 @@
         list: null,
         total: null,
         listLoading: true,
+        btnLoading: false,
         passwordType: 'password',
         listQuery: {
           pageNum: 1,
@@ -196,7 +193,11 @@
         dialogFormVisible: false,
         dialogStatus: '',
         rules: {
-          nickName: [{ required: true, message: '昵称不为空', trigger: 'blur' }]
+          nickName: [{ required: true, message: '昵称不为空', trigger: 'blur' }],
+          userName: [{ required: true, message: '用户名不为空', trigger: 'blur' }],
+          password: [{ required: true, message: '密码不能为空', trigger: 'blur' }],
+          phone: [{ required: false, validator: checkPhone, trigger: 'blur' }],
+          status: [{ required: true, message: '身份不为空', trigger: 'change' }]
         },
         multipleSelection: []
       }
@@ -292,7 +293,7 @@
       createData() {
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
-            this.listLoading = true
+            this.btnLoading = true
             insertUser(this.temp).then(response => {
               if (response.code === 50001) {
                 store.dispatch('GetRefreshToken').then(() => {
@@ -300,8 +301,8 @@
                 })
               }
               if (response.code === 200) {
-                this.list.unshift(this.temp)
-                this.listLoading = false
+                this.getList()
+                this.btnLoading = false
                 this.dialogFormVisible = false
                 this.$notify({
                   title: '成功',
@@ -311,7 +312,7 @@
                 })
               }
             }).catch(() => {
-              this.listLoading = false
+              this.btnLoading = false
             })
           }
         })
@@ -327,7 +328,7 @@
       updateData() {
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
-            this.listLoading = true
+            this.btnLoading = true
             updateUser(this.temp).then(response => {
               if (response.code === 50001) {
                 store.dispatch('GetRefreshToken').then(() => {
@@ -338,11 +339,12 @@
                 for (const v of this.list) {
                   if (v.id === this.temp.id) {
                     const index = this.list.indexOf(v)
+                    this.temp.statusName = keyToValue(this.calendarTypeOptions)[this.temp.status]
                     this.list.splice(index, 1, this.temp)
                     break
                   }
                 }
-                this.listLoading = false
+                this.btnLoading = false
                 this.dialogFormVisible = false
                 this.$notify({
                   title: '成功',
@@ -352,7 +354,7 @@
                 })
               }
             }).catch(() => {
-              this.listLoading = false
+              this.btnLoading = false
             })
           }
         })
