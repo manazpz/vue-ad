@@ -9,3 +9,8 @@ export function toThousands(num) {
   }).replace(/\.$/, '')
 }
 
+export function commafyback(num) {
+  var x = num.split(',')
+  return parseFloat(x.join(""))
+}
+

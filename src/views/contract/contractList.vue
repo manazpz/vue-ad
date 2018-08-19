@@ -27,7 +27,7 @@
 
     <!-- 表格 start -->
     <el-table :key='tableKey' :data="list" v-loading="listLoading" border fit highlight-current-row
-              style="width: 100%;min-height:1000px;" @row-click="handdle">
+              style="width: 100%;min-height:600px;" @row-click="handdle">
       <el-table-column align="center" label="序号" width="60">
         <template slot-scope="scope">
           <span>{{scope.$index+1}}</span>
@@ -144,15 +144,12 @@
         <el-form-item label-width="110px" label="合同总金额" prop="money_init" class="postInfo-container-item">
           <el-input type="number" v-model.number ="temp.money_init" required placeholder="请输入合同总金额"></el-input>
         </el-form-item>
-        <el-form-item label-width="110px" label="已付金额" prop="paid" class="postInfo-container-item">
-          <el-input type="number" v-model.number ="temp.paid" required placeholder="请输入已付金额"></el-input>
+        <el-form-item label-width="110px" label="税率" prop="taxlimit" class="postInfo-container-item">
+          <el-input type="number" v-model.number ="temp.taxlimit" required placeholder="请输入税率"></el-input>
         </el-form-item>
-        <el-form-item label-width="110px" label="税率" prop="tax" class="postInfo-container-item">
-          <el-input type="number" v-model.number ="temp.tax" required placeholder="请输入税率"></el-input>
-        </el-form-item>
-        <el-form-item label-width="110px" label="税额" prop="taxlimit" class="postInfo-container-item">
-          <el-input type="number" v-model.number ="temp.taxlimit" required placeholder="请输入税额"></el-input>
-        </el-form-item>
+        <!--<el-form-item label-width="110px" label="税额" prop="tax" class="postInfo-container-item">-->
+          <!--<el-input type="number" v-model.number ="temp.tax" required placeholder="请输入税额"></el-input>-->
+        <!--</el-form-item>-->
         <el-form-item label-width="110px" label="币种" prop="currency" class="postInfo-container-item">
           <el-select v-model="temp.currency" style="width: 100px" >
               <el-option v-for="item in currencyOptions" :key="item.keyWord" :label="item.name" :value="item.keyWord" >
@@ -208,7 +205,7 @@
 
 <script>
   import { contractList, createContract, updateContract, deleteContract, createcontractSub } from '@/api/contract'
-  import { toThousands } from '@/common/common'
+  import { toThousands, commafyback } from '@/common/common'
   import { customerList } from '@/api/customer'
   import { getConfig } from '@/api/user'
   import waves from '@/directive/waves' // 水波纹指令
@@ -226,7 +223,7 @@
         listLoading: true,
         listQuery: {
           pageNum: 1,
-          pageSize: 20,
+          pageSize: 10,
           name: undefined,
           statusKey: undefined,
           sort: 'lastCreateTime DESC'
@@ -276,9 +273,9 @@
           customerKeyA: [{ required: true, message: '甲方不能为空', trigger: 'change' }],
           customerKeyB: [{ required: true, message: '乙方不能为空', trigger: 'change' }],
           money_init: [{ required: true, message: '合同总金额不能为空', trigger: 'change' }],
-          paid: [{ required: true, message: '合同已付金额不能为空', trigger: 'change' }],
-          tax: [{ required: true, message: '合同税率不能为空', trigger: 'change' }],
-          taxlimit: [{ required: true, message: '合同税额不能为空', trigger: 'change' }],
+          // paid: [{ required: true, message: '合同已付金额不能为空', trigger: 'change' }],
+          // tax: [{ required: true, message: '合同税额不能为空', trigger: 'change' }],
+          taxlimit: [{ required: true, message: '合同税率不能为空', trigger: 'change' }],
           currency: [{ required: true, message: '币种不能为空', trigger: 'change' }],
           signTime: [{ required: true, message: '合同签署时间不能为空', trigger: 'change' }],
           expireTime: [{ required: true, message: '合同到期时间不能为空', trigger: 'change' }]
@@ -451,6 +448,7 @@
       },
       handleUpdate(row) {
         this.temp = Object.assign({}, row) // copy obj
+        this.temp.money_init = commafyback(this.temp.money_init)
         this.temp.timestamp = new Date(this.temp.timestamp)
         this.dialogStatus = '编辑合同'
         this.dialogFormVisible = true
