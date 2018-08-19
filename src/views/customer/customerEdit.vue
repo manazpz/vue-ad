@@ -84,13 +84,6 @@
     name: 'customerEdit',
     components: { Sticky },
     data() {
-      const validateRequire = (rule, value, callback) => {
-        if (value === '') {
-          callback(rule.field)
-        } else {
-          callback()
-        }
-      }
       return {
         postForm: Object.assign({}, defaultForm),
         loading: false,

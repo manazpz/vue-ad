@@ -11,6 +11,6 @@ export function toThousands(num) {
 
 export function commafyback(num) {
   var x = num.split(',')
-  return parseFloat(x.join(""))
+  return parseFloat(x.join(''))
 }
 

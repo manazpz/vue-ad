@@ -33,12 +33,12 @@
           <span>{{scope.$index+1}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="合同编码" width="140">
+      <el-table-column align="center" label="合同编码" min-width="90">
       <template slot-scope="scope">
         <span>{{scope.row.number}}</span>
       </template>
     </el-table-column>
-      <el-table-column align="center" label="父合同编码" width="140">
+      <el-table-column align="center" label="父合同编码" min-width="90">
         <template slot-scope="scope">
           <span>{{scope.row.parent}}</span>
         </template>
@@ -48,12 +48,12 @@
           <span>{{scope.row.title}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="甲方" width="90">
+      <el-table-column align="center" label="甲方" width="80">
         <template slot-scope="scope">
           <span>{{scope.row.customer_a_Name}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="乙方" width="90">
+      <el-table-column align="center" label="乙方" width="80">
         <template slot-scope="scope">
           <span>{{scope.row.customer_b_Name}}</span>
         </template>
@@ -84,7 +84,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column width="90" align="center" label="状态">
+      <el-table-column width="80" align="center" label="状态">
         <template slot-scope="scope">
           <span>{{scope.row.statusName}}</span>
         </template>
