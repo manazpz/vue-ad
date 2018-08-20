@@ -58,14 +58,20 @@ export const asyncRouterMap = [
       path: 'list',
       component: () => import('@/views/contract/contractList'),
       name: 'contractList',
-      meta: { title: 'contractList', icon: 'contract', noCache: true }
+      meta: { title: 'contractList' }
+    },
+    {
+      path: 'saleList',
+      component: () => import('@/views/contract/contractSaleList'),
+      name: 'contractSaleList',
+      meta: { title: 'contractSaleList', noCache: true }
     },
     {
       path: 'detail',
       component: () => import('@/views/contract/contractDetail'),
       hidden: true,
       name: 'contractDetail',
-      meta: { title: 'contractDetail', noCache: true }
+      meta: { title: 'contractDetail', noCache: true  }
     }]
   },
 

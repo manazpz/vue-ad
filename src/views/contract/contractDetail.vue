@@ -1,7 +1,6 @@
 <template>
-  <div class="tab-container">
+  <div class="app-container">
     <el-form class="form-container" :model="list" :rules="rules" ref="temp">
-    <h2 style="margin-top:0;">{{ activeTitle }}</h2>
       <!-- 悬浮框 start -->
       <sticky :className="'sub-navbar '+temp.status">
         <el-button  style="margin-left: 10px;" type="success" @click="handleCreate">新增合伙人
@@ -10,113 +9,63 @@
       </sticky>
       <!-- 悬浮框 end -->
       <hr>
-    <el-row :gutter="20">
-      <el-col :span="8">名称: {{ list.title }}</el-col>
-      <el-col :span="8">起始时间: {{ list.signTime }}</el-col>
-      <el-col :span="4">结束时间: {{ list.expireTime }}</el-col>
-    </el-row>
-    <hr>
-
-    <div class="createPost-main-container">
-      <div class="postInfo-container">
-        <el-row>
-          <el-col :span="10">
-            <el-form-item label-width="150px" label="合同名称:"  class="postInfo-container-item">
-              <span>{{ list.title }}</span>
-            </el-form-item>
-            <el-form-item label-width="150px" label="合同编号:" class="postInfo-container-item">
-              <span>{{ list.number }}</span>
-            </el-form-item>
-            <el-form-item label-width="150px" label="甲方:" class="postInfo-container-item">
-              <span>{{ list.customer_a_Name }}</span>
-            </el-form-item>
-            <el-form-item label-width="150px" label="乙方:" class="postInfo-container-item">
-              <span>{{ list.customer_b_Name }}</span>
-            </el-form-item>
-            <el-form-item label-width="150px" label="总金额:" class="postInfo-container-item">
-              <span>{{ list.money_init }}</span>
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label-width="100px" label="已付总金额:" class="postInfo-container-item">
-              <span>{{ list.paid }}</span>
-            </el-form-item>
-            <el-form-item label-width="100px" label="支出总金额:" class="postInfo-container-item">
-              <span>{{ list.expenses }}</span>
-            </el-form-item>
-            <el-form-item label-width="100px" label="盈利:" class="postInfo-container-item">
-              <span>{{ list.income }}</span>
-            </el-form-item>
-            <el-form-item label-width="100px" label="签署时间:" class="postInfo-container-item">
-              <span>{{ list.signTime }}</span>
-            </el-form-item>
-            <el-form-item label-width="100px" label="到期时间:" class="postInfo-container-item">
-              <span>{{ list.expireTime }}</span>
-            </el-form-item>
-            <el-form-item label-width="100px" label="摘要:" class="postInfo-container-item">
-              <span>{{ list.reamrks1 }}</span>
-            </el-form-item>
-          </el-col>
-        </el-row>
-      </div>
-    </div>
-
+      <h4 style="margin-top:0;">合同明细</h4>
       <hr>
-      <h4 style="margin-top:0;">收支明细</h4>
-      <!-- 表格 start -->
-      <el-table :key='tableKey' :data="listData" v-loading="listLoading" border fit highlight-current-row
-                style="width: 100%;min-height:300px;">
-        <el-table-column align="center" label="序号" width="60">
-          <template slot-scope="scope">
-            <span>{{scope.$index+1}}</span>
-          </template>
-        </el-table-column>
-        <el-table-column align="center" label="类型" min-width="110">
-          <template slot-scope="scope">
-            <span>{{scope.row.type}}</span>
-          </template>
-        </el-table-column>
-        <el-table-column align="center" label="金额" min-width="110">
-          <template slot-scope="scope">
-            <span>{{scope.row.amount}}</span>
-          </template>
-        </el-table-column>
-        <el-table-column align="center" label="收款人" min-width="110">
-          <template slot-scope="scope">
-            <span>{{scope.row.payee}}</span>
-          </template>
-        </el-table-column>
-        <el-table-column align="center" label="付款人" min-width="110">
-          <template slot-scope="scope">
-            <span>{{scope.row.payer}}</span>
-          </template>
-        </el-table-column>
-        <el-table-column align="center" label="创建时间" min-width="130">
-          <template slot-scope="scope">
-            <span>{{scope.row.creattime}}</span>
-          </template>
-        </el-table-column>
-
-      </el-table>
-      <!-- 表格 end -->
-
-      <!-- 分页组件 start -->
-      <div class="pagination-container">
-        <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
-                       :current-page="listQuery.pageNum" :page-sizes="[10,20,30, 50]" :page-size="listQuery.pageSize"
-                       layout="total, sizes, prev, pager, next, jumper" :total="total">
-        </el-pagination>
+      <div class="createPost-main-container">
+        <div class="app-container">
+          <el-row>
+            <el-col :span="10">
+              <el-form-item label-width="150px" label="合同名称:"  class="postInfo-container-item">
+                <span>{{ list.title }}</span>
+              </el-form-item>
+              <el-form-item label-width="150px" label="合同编号:" class="postInfo-container-item">
+                <span>{{ list.number }}</span>
+              </el-form-item>
+              <el-form-item label-width="150px" label="甲方:" class="postInfo-container-item">
+                <span>{{ list.customer_a_Name }}</span>
+              </el-form-item>
+              <el-form-item label-width="150px" label="乙方:" class="postInfo-container-item">
+                <span>{{ list.customer_b_Name }}</span>
+              </el-form-item>
+              <el-form-item label-width="150px" label="总金额:" class="postInfo-container-item">
+                <span>{{ list.money_init }}</span>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label-width="100px" label="收款总金额:" class="postInfo-container-item">
+                <span>{{ list.paid }}</span>
+              </el-form-item>
+              <el-form-item label-width="100px" label="支出总金额:" class="postInfo-container-item">
+                <span>{{ list.expenses }}</span>
+              </el-form-item>
+              <el-form-item label-width="100px" label="盈利:" class="postInfo-container-item">
+                <span>{{ list.income }}</span>
+              </el-form-item>
+              <el-form-item label-width="100px" label="签署时间:" class="postInfo-container-item">
+                <span>{{ list.signTime }}</span>
+              </el-form-item>
+              <el-form-item label-width="100px" label="到期时间:" class="postInfo-container-item">
+                <span>{{ list.expireTime }}</span>
+              </el-form-item>
+              <el-form-item label-width="100px" label="摘要:" class="postInfo-container-item">
+                <span>{{ list.reamrks1 }}</span>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </div>
       </div>
-      <!-- 分页组件 end -->
-
       <!-- Tab页签 start -->
       <hr>
-      <h4 style="margin-top:0;">其他信息</h4>
+      <h4 style="margin-top:0;">合同相关信息</h4>
+      <hr>
       <el-tabs v-model="activeName">
-        <el-tab-pane label="子合同" name="first">
+        <el-tab-pane label="收支明细" name="first">
+          <contractPay></contractPay>
+        </el-tab-pane>
+        <el-tab-pane label="子合同" name="second">
           <subContract></subContract>
         </el-tab-pane>
-        <el-tab-pane label="合作伙伴" name="second">
+        <el-tab-pane label="合作伙伴" name="third">
           <partner></partner>
         </el-tab-pane>
       </el-tabs>
@@ -202,16 +151,17 @@
 </template>
 <script>
   import Sticky from '@/components/Sticky' // 粘性header组件
-  import { createContractPartner, contractList, createcontractExpnses, expnsesList } from '@/api/contract'
   import { toThousands } from '@/utils/common'
+  import { createContractPartner, createcontractExpnses, contractList } from '@/api/contract'
   import { customerList } from '@/api/customer'
   import { getConfig } from '@/api/user'
-  import store from '@/store'
+  import msgContract from './components/contractDetailMsg'
+  import contractPay from './components/contractDetailPay'
   import subContract from './components/contractDetailSub'
   import partner from './components/contractDetailPartner'
   export default {
     name: 'contractDetail',
-    components: { Sticky, subContract, partner },
+    components: { Sticky, subContract, partner, msgContract, contractPay },
     data: function() {
       return {
         tableKey: 0,
@@ -320,13 +270,6 @@
         customerList(this.listQuery).then(response => {
           if (!response.data.items) return
           this.userListOptions = response.data.items
-        })
-        expnsesList(this.listQuery).then(response => {
-          if (!response.data.items) return
-          this.listData = response.data.items
-          this.list.forEach(function(c) {
-            c.amount = toThousands(c.amount)
-          })
         })
       },
       resetTemp() {

@@ -33,12 +33,12 @@
           <span>{{scope.$index+1}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="合同编码" min-width="90">
-      <template slot-scope="scope">
-        <span>{{scope.row.number}}</span>
-      </template>
-    </el-table-column>
-      <el-table-column align="center" label="父合同编码" min-width="90">
+      <el-table-column align="center" label="合同编码" width="140">
+        <template slot-scope="scope">
+          <span>{{scope.row.number}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="父合同编码" width="140">
         <template slot-scope="scope">
           <span>{{scope.row.parent}}</span>
         </template>
@@ -48,12 +48,12 @@
           <span>{{scope.row.title}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="甲方" width="80">
+      <el-table-column align="center" label="甲方" width="90">
         <template slot-scope="scope">
           <span>{{scope.row.customer_a_Name}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="乙方" width="80">
+      <el-table-column align="center" label="乙方" width="90">
         <template slot-scope="scope">
           <span>{{scope.row.customer_b_Name}}</span>
         </template>
@@ -84,7 +84,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column width="80" align="center" label="状态">
+      <el-table-column width="90" align="center" label="状态">
         <template slot-scope="scope">
           <span>{{scope.row.statusName}}</span>
         </template>
@@ -148,11 +148,11 @@
           <el-input type="number" v-model.number ="temp.taxlimit" required placeholder="请输入税率"></el-input>
         </el-form-item>
         <!--<el-form-item label-width="110px" label="税额" prop="tax" class="postInfo-container-item">-->
-          <!--<el-input type="number" v-model.number ="temp.tax" required placeholder="请输入税额"></el-input>-->
+        <!--<el-input type="number" v-model.number ="temp.tax" required placeholder="请输入税额"></el-input>-->
         <!--</el-form-item>-->
         <el-form-item label-width="110px" label="币种" prop="currency" class="postInfo-container-item">
           <el-select v-model="temp.currency" style="width: 100px" >
-              <el-option v-for="item in currencyOptions" :key="item.keyWord" :label="item.name" :value="item.keyWord" >
+            <el-option v-for="item in currencyOptions" :key="item.keyWord" :label="item.name" :value="item.keyWord" >
             </el-option>
           </el-select>
         </el-form-item>
@@ -225,7 +225,7 @@
           pageNum: 1,
           pageSize: 10,
           name: undefined,
-          types: 'ZL',
+          types: 'XS',
           statusKey: undefined,
           sort: 'lastCreateTime DESC'
         },
@@ -420,7 +420,7 @@
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
             this.listLoading = true
-            this.temp.contractType = 'ZL'
+            this.temp.contractType = 'XS'
             createContract(this.temp).then(response => {
               this.dialogFormVisible = false
               this.$notify({
