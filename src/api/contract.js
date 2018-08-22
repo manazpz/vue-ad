@@ -64,11 +64,19 @@ export function createcontractSub(query) {
   })
 }
 
-export function createcontractExpnses(query) {
+export function createcontractExpnses(params) {
   return request({
     url: '/contract/insertExpnses',
     method: 'POST',
-    params: query
+    data: params
+  })
+}
+
+export function cancleExpnses(params) {
+  return request({
+    url: '/contract/deleteAttachment',
+    method: 'POST',
+    data: params
   })
 }
 
@@ -77,5 +85,22 @@ export function expnsesList(params) {
     url: '/contract/queryExpnses',
     method: 'POST',
     data: params
+  })
+}
+
+export function contractAttaList(params) {
+  return request({
+    url: '/contract/queryAtta',
+    method: 'POST',
+    data: params
+  })
+}
+
+export function attaList(query) {
+  return request({
+    url: '/contract/getReasourse',
+    method: 'get',
+    responseType: 'blob',
+    params: query
   })
 }

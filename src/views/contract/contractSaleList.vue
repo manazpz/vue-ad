@@ -356,6 +356,7 @@
             })
           }
           if (response.code === 200) {
+            this.getList()
             this.listLoading = false
             this.dialogFormVisible = false
             this.$message({
@@ -422,15 +423,22 @@
             this.listLoading = true
             this.temp.contractType = 'XS'
             createContract(this.temp).then(response => {
-              this.dialogFormVisible = false
-              this.$notify({
-                title: '成功',
-                message: '创建成功',
-                type: 'success',
-                duration: 2000
-              })
+              if (response.code === 50001) {
+                store.dispatch('GetRefreshToken').then(() => {
+                  this.createData()
+                })
+              }
+              if (response.code === 200) {
+                this.getList()
+                this.dialogFormVisible = false
+                this.$notify({
+                  title: '成功',
+                  message: '创建成功',
+                  type: 'success',
+                  duration: 2000
+                })
+              }
             })
-            this.getList()
           }
         })
       },
@@ -439,15 +447,22 @@
           if (valid) {
             this.listLoading = true
             createcontractSub(this.temps).then(response => {
-              this.dialogFormSubVisible = false
-              this.$notify({
-                title: '成功',
-                message: '创建成功',
-                type: 'success',
-                duration: 2000
-              })
+              if (response.code === 50001) {
+                store.dispatch('GetRefreshToken').then(() => {
+                  this.createSubData()
+                })
+              }
+              if (response.code === 200) {
+                this.getList()
+                this.dialogFormSubVisible = false
+                this.$notify({
+                  title: '成功',
+                  message: '创建成功',
+                  type: 'success',
+                  duration: 2000
+                })
+              }
             })
-            this.getList()
           }
         })
       },
@@ -467,22 +482,28 @@
             const tempData = Object.assign({}, this.temp)
             tempData.timestamp = +new Date(tempData.timestamp)
             this.listLoading = true
-            updateContract(tempData).then(() => {
-              for (const v of this.list) {
-                if (v.id === this.temp.id) {
-                  const index = this.list.indexOf(v)
-                  this.list.splice(index, 1, this.temp)
-                  break
-                }
+            updateContract(tempData).then((response) => {
+              if (response.code === 50001) {
+                store.dispatch('GetRefreshToken').then(() => {
+                  this.updateData()
+                })
               }
-              this.dialogFormVisible = false
-              this.$notify({
-                title: '成功',
-                message: '更新成功',
-                type: 'success',
-                duration: 2000
-              })
-              this.getList()
+              if (response.code === 200) {
+                for (const v of this.list) {
+                  if (v.id === this.temp.id) {
+                    const index = this.list.indexOf(v)
+                    this.list.splice(index, 1, this.temp)
+                    break
+                  }
+                }
+                this.dialogFormVisible = false
+                this.$notify({
+                  title: '成功',
+                  message: '更新成功',
+                  type: 'success',
+                  duration: 2000
+                })
+              }
             })
           }
         })

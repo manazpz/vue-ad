@@ -356,6 +356,7 @@
             })
           }
           if (response.code === 200) {
+            this.getList()
             this.listLoading = false
             this.dialogFormVisible = false
             this.$message({
@@ -422,15 +423,22 @@
             this.listLoading = true
             this.temp.contractType = 'ZL'
             createContract(this.temp).then(response => {
-              this.dialogFormVisible = false
-              this.$notify({
-                title: '成功',
-                message: '创建成功',
-                type: 'success',
-                duration: 2000
-              })
+              if (response.code === 50001) {
+                store.dispatch('GetRefreshToken').then(() => {
+                  this.createSubData()
+                })
+              }
+              if (response.code === 200) {
+                this.getList()
+                this.dialogFormVisible = false
+                this.$notify({
+                  title: '成功',
+                  message: '创建成功',
+                  type: 'success',
+                  duration: 2000
+                })
+              }
             })
-            this.getList()
           }
         })
       },
@@ -439,15 +447,22 @@
           if (valid) {
             this.listLoading = true
             createcontractSub(this.temps).then(response => {
-              this.dialogFormSubVisible = false
-              this.$notify({
-                title: '成功',
-                message: '创建成功',
-                type: 'success',
-                duration: 2000
-              })
+              if (response.code === 50001) {
+                store.dispatch('GetRefreshToken').then(() => {
+                  this.createSubData()
+                })
+              }
+              if (response.code === 200) {
+                this.getList()
+                this.dialogFormSubVisible = false
+                this.$notify({
+                  title: '成功',
+                  message: '创建成功',
+                  type: 'success',
+                  duration: 2000
+                })
+              }
             })
-            this.getList()
           }
         })
       },

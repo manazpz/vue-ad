@@ -8,40 +8,51 @@
           <span>{{scope.$index+1}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="合伙人" min-width="60">
+      <el-table-column align="center" label="附件类型" min-width="90">
+        <template slot-scope="scope">
+          <span>{{scope.row.type}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="附件名称" min-width="90">
         <template slot-scope="scope">
           <span>{{scope.row.name}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="合同总金额" min-width="60">
+      <el-table-column align="center" label="附件格式" width="90">
         <template slot-scope="scope">
-          <span>{{scope.row.money_init}}</span>
+          <span>{{scope.row.extend}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="抽成比例" width="90">
+      <el-table-column align="center" label="附件大小" width="90">
         <template slot-scope="scope">
-          <span>{{scope.row.pro}}%</span>
+          <span>{{scope.row.sizes}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="盈利" min-width="60">
+      <el-table-column align="center" label="创建时间" min-width="90">
         <template slot-scope="scope">
-          <span>{{scope.row.income}}</span>
+          <span>{{scope.row.creattime}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="签署时间" min-width="90">
+      <el-table-column align="center" label="修改时间" min-width="90">
         <template slot-scope="scope">
-          <span>{{scope.row.signTime}}</span>
+          <span>{{scope.row.lastcreattime}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="到期时间" min-width="90">
+      <el-table-column align="center" label="备注" width="90">
         <template slot-scope="scope">
-          <span>{{scope.row.expireTime}}</span>
+          <span>{{scope.row.remark}}</span>
         </template>
       </el-table-column>
-
-      <el-table-column width="90" align="center" label="状态">
+      <el-table-column align="center" label="操作" width="150" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <span>{{scope.row.status}}</span>
+          <el-dropdown>
+            <el-button type="success" size="mini" >
+              操作<i class="el-icon-arrow-down el-icon--right"></i>
+            </el-button>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item @click.native = "handleUpload(scope.row)">下载</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
         </template>
       </el-table-column>
     </el-table>
@@ -60,10 +71,8 @@
 
   </div>
 </template>
-
 <script>
-  import { getContract } from '@/api/contract'
-  import { toThousands } from '@/utils/common'
+  import { contractAttaList, attaList } from '@/api/contract'
   import store from '@/store'
   export default {
     name: 'contractDetailPartner',
@@ -78,6 +87,11 @@
         listQuery: {
           pageNum: 1,
           pageSize: 5
+        },
+        temp: {
+          name: '',
+          url: '',
+          extend: ''
         }
       }
     },
@@ -88,7 +102,7 @@
     methods: {
       getList() {
         this.listLoading = true
-        getContract(this.listQuery).then(response => {
+        contractAttaList(this.listQuery).then(response => {
           if (response.code === 50001) {
             store.dispatch('GetRefreshToken').then(() => {
               this.getList()
@@ -96,10 +110,6 @@
           }
           if (response.code === 200) {
             this.list = response.data.items
-            this.list.forEach(function(c) {
-              c.income = toThousands(c.income)
-              c.money_init = toThousands(c.money_init)
-            })
             this.total = response.data.total
             setTimeout(() => {
               this.listLoading = false
@@ -120,6 +130,12 @@
       handleCurrentChange(val) {
         this.listQuery.pageNum = val
         this.getList()
+      },
+      handleUpload(row) {
+        this.temp.name = row.name
+        this.temp.extend = row.extend
+        this.temp.url = row.url
+        window.location.href = process.env.BASE_API + '/contract/getReasourse?name=' + row.name + '&extend=' + row.extend + '&url=' + row.url
       }
     }
   }

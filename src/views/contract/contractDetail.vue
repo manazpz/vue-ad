@@ -68,6 +68,9 @@
         <el-tab-pane label="合作伙伴" name="third">
           <partner></partner>
         </el-tab-pane>
+        <el-tab-pane label="附件" name="fourth">
+          <atta></atta>
+        </el-tab-pane>
       </el-tabs>
       <!-- Tab页签 end -->
 
@@ -135,8 +138,26 @@
             <el-input v-model="temps.reamrks1" type="textarea"  :rows="5"  placeholder="请摘要内容"></el-input>
           </el-form-item>
         </el-form>
+        <el-upload
+          ref="foreignPersonUploadItem"
+          class="avatar-uploader"
+          :action="uploadUrl"
+          v-model="temps.file"
+          name="file"
+          :show-file-list="true"
+          :multiple="true"
+          :limit="9"
+          :file-list="fileList"
+          :on-change="OnChange"
+          :on-remove="OnRemove"
+          :before-remove="beforeRemove"
+          :on-success="handleAvatarSuccess"
+          accept=".jpg,.jpeg,.png,.gif,.pdf,.doc,.docx,.xls,.xlsx,.JPG,.JPEG,.PBG,.GIF,.PDF,.DOC,.DOCX,.XLS,.XLSX"
+          :before-upload="beforeAvatarUpload">
+        <el-button type="text">上传附件</el-button>
+        </el-upload>
         <div slot="footer" class="dialog-footer">
-          <el-button @click="dialogExpnsesVisible = false">{{$t('table.cancel')}}</el-button>
+          <el-button @click="cancleDataExpnses">{{$t('table.cancel')}}</el-button>
           <el-button type="primary" @click="createDataExpnses">{{$t('table.confirm')}}</el-button>
         </div>
       </el-dialog>
@@ -152,18 +173,22 @@
 <script>
   import Sticky from '@/components/Sticky' // 粘性header组件
   import { toThousands } from '@/utils/common'
-  import { createContractPartner, createcontractExpnses, contractList } from '@/api/contract'
+  import { createContractPartner, createcontractExpnses, contractList, cancleExpnses } from '@/api/contract'
   import { customerList } from '@/api/customer'
   import { getConfig } from '@/api/user'
+  import store from '@/store'
   import msgContract from './components/contractDetailMsg'
   import contractPay from './components/contractDetailPay'
   import subContract from './components/contractDetailSub'
   import partner from './components/contractDetailPartner'
+  import atta from './components/contractDetailAtta'
   export default {
     name: 'contractDetail',
-    components: { Sticky, subContract, partner, msgContract, contractPay },
+    components: { Sticky, subContract, partner, msgContract, contractPay, atta },
     data: function() {
       return {
+        uploadUrl: process.env.BASE_API + '/contract/uploadFile',
+        fileList: [],
         tableKey: 0,
         activeName: 'first',
         list: null,
@@ -198,7 +223,11 @@
         temps: {
           id: undefined,
           type: '',
+          file: [],
+          size: [],
+          suffix: [],
           typePaye: '',
+          name: [],
           amount: '',
           payee: '',
           payer: '',
@@ -288,6 +317,10 @@
         this.temps = {
           id: undefined,
           types: '',
+          file: [],
+          size: [],
+          name: [],
+          suffix: [],
           typePaye: '',
           contractId: '',
           income: '',
@@ -308,6 +341,29 @@
       handleCurrentChange(val) {
         this.listQuery.pageNum = val
         this.getList()
+      },
+      beforeRemove(files, fileList) {
+        return this.$confirm(`确定移除 $ { file.name }？`)
+      },
+      OnChange(file, fileList) {
+        this.fileList = fileList
+      },
+      OnRemove(file, fileList) {
+        this.fileList = fileList
+      },
+      handleAvatarSuccess(response, file, fileList) {
+        this.resetTemp()
+        this.temps.file.push(response.data.url)
+        this.temps.size.push(response.data.size)
+        this.temps.suffix.push(response.data.suffix)
+        this.temps.types = 'SZ'
+        this.temps.name.push(response.data.name)
+      },
+      beforeAvatarUpload(file) {
+      },
+      deleteImg(index) { // 点击删除删除图片
+        this.form.attachment.splice(index, 1)
+        this.$refs.uploadItem.uploadFiles.splice(index, 1)
       },
       handleCreate() {
         this.resetTemp()
@@ -333,7 +389,13 @@
           if (valid) {
             this.listLoading = true
             createContractPartner(this.temp).then(response => {
+              if (response.code === 50001) {
+                store.dispatch('GetRefreshToken').then(() => {
+                  this.createData()
+                })
+              }
               if (response.code === 200) {
+                this.getList()
                 this.listLoading = false
                 this.dialogFormVisible = false
                 this.$notify({
@@ -344,6 +406,13 @@
                 })
               }
             })
+          }
+        })
+      },
+      cancleDataExpnses() {
+        cancleExpnses(this.temps).then(response => {
+          if (response.code === 200) {
+            this.dialogExpnsesVisible = false
             this.getList()
           }
         })
@@ -353,7 +422,13 @@
           if (valid) {
             this.listLoading = true
             createcontractExpnses(this.temps).then(response => {
+              if (response.code === 50001) {
+                store.dispatch('GetRefreshToken').then(() => {
+                  this.getList()
+                })
+              }
               if (response.code === 200) {
+                this.getList()
                 this.listLoading = false
                 this.dialogExpnsesVisible = false
                 this.$notify({
@@ -362,7 +437,12 @@
                   type: 'success',
                   duration: 2000
                 })
+                setTimeout(() => {
+                  this.listLoading = false
+                }, 1.5 * 1000)
               }
+            }).catch(() => {
+              this.listLoading = false
             })
           }
         })
@@ -378,5 +458,8 @@
   }
   .el-form-item{
     margin-bottom: 10px !important;
+  }
+  .avatar-uploader {
+    margin-left: 45px !important;
   }
 </style>
