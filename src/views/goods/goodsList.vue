@@ -28,7 +28,7 @@
 
     <!-- 表格 start -->
     <el-table :key='tableKey' :data="list" v-loading="listLoading" border fit highlight-current-row
-              style="width: 100%;min-height:1000px;">
+              style="width: 100%;min-height:100%;">
       <el-table-column align="center" label="序号" width="50">
         <template slot-scope="scope">
           <span>{{scope.$index+1}}</span>
@@ -82,6 +82,11 @@
       <el-table-column align="center" label="修改时间" min-width="90">
         <template slot-scope="scope">
           <span>{{scope.row.lastCreateTime}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="备注" min-width="90">
+        <template slot-scope="scope">
+          <span>{{scope.row.remarks}}</span>
         </template>
       </el-table-column>
       <el-table-column width="50" align="center" label="状态">
@@ -139,6 +144,9 @@
         <el-form-item label-width="110px" label="价格" prop="price" class="postInfo-container-item">
           <el-input v-model="temp.price" placeholder="请输入价格"></el-input>
         </el-form-item>
+        <el-form-item label-width="110px" label="备注"  class="postInfo-container-item">
+          <el-input v-model="temp.remarks" type="textarea"  :rows="5"  placeholder="请输入备注"></el-input>
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">{{$t('table.cancel')}}</el-button>
@@ -173,7 +181,7 @@
         btnLoading: false,
         listQuery: {
           pageNum: 1,
-          pageSize: 20,
+          pageSize: 10,
           name: undefined,
           typeKey: undefined,
           sort: 'lastCreateTime DESC'
@@ -192,6 +200,7 @@
           typeKey: 'GG',
           unitKey: 'UP',
           price: '',
+          remarks: '',
           status: 'published'
         },
         rules: {
@@ -283,6 +292,7 @@
           typeKey: 'GG',
           unitKey: 'UP',
           price: '',
+          remarks: '',
           status: 'published'
         }
       },

@@ -9,8 +9,6 @@
       </sticky>
       <!-- 悬浮框 end -->
       <hr>
-      <h4 style="margin-top:0;">合同明细</h4>
-      <hr>
       <div class="createPost-main-container">
         <div class="app-container">
           <el-row>
@@ -56,8 +54,6 @@
       </div>
       <!-- Tab页签 start -->
       <hr>
-      <h4 style="margin-top:0;">合同相关信息</h4>
-      <hr>
       <el-tabs v-model="activeName">
         <el-tab-pane label="收支明细" name="first">
           <contractPay></contractPay>
@@ -70,6 +66,9 @@
         </el-tab-pane>
         <el-tab-pane label="附件" name="fourth">
           <atta></atta>
+        </el-tab-pane>
+        <el-tab-pane label="商品" name="fifth">
+          <goods></goods>
         </el-tab-pane>
       </el-tabs>
       <!-- Tab页签 end -->
@@ -113,9 +112,15 @@
       <el-dialog :title="dialogExpnses" :visible.sync="dialogExpnsesVisible">
         <el-form :rules="rule" ref="dataFormExpnses" :model="temps" label-position="left" label-width="70px"
                  style='width: 400px; margin-left:50px;'>
-          <el-form-item label-width="110px" label="类型" prop="typePaye" class="postInfo-container-item">
+          <el-form-item label-width="110px" label="收支类型" prop="typePaye" class="postInfo-container-item">
             <el-select v-model="temps.typePaye" required filterable placeholder="请选择">
               <el-option v-for="item in typePayOptions" :key="item.keyWord" :label="item.name" :value="item.keyWord" >
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label-width="110px" label="费用类型" prop="costType" class="postInfo-container-item">
+            <el-select v-model="temps.costType" required filterable placeholder="请选择">
+              <el-option v-for="item in costTypeOptions" :key="item.keyWord" :label="item.name" :value="item.keyWord" >
               </el-option>
             </el-select>
           </el-form-item>
@@ -182,9 +187,10 @@
   import subContract from './components/contractDetailSub'
   import partner from './components/contractDetailPartner'
   import atta from './components/contractDetailAtta'
+  import goods from './components/contractDetailGoods'
   export default {
     name: 'contractDetail',
-    components: { Sticky, subContract, partner, msgContract, contractPay, atta },
+    components: { Sticky, subContract, partner, msgContract, contractPay, atta, goods },
     data: function() {
       return {
         uploadUrl: process.env.BASE_API + '/contract/uploadFile',
@@ -197,6 +203,7 @@
         listLoading: true,
         type: { type: '\'TYPEC\'' },
         typePay: { type: '\'TYPEPAY\'' },
+        costType: { type: '\'COSTTYPE\'' },
         tabMapOptions: [
           { label: '子合同', key: 'CN' },
           { label: '合作伙伴', key: 'US' }
@@ -227,6 +234,7 @@
           size: [],
           suffix: [],
           typePaye: '',
+          costType: '',
           name: [],
           amount: '',
           payee: '',
@@ -238,6 +246,7 @@
         typeOptions: [],
         typePayOptions: [],
         userListOptions: [],
+        costTypeOptions: [],
         activeTitle: '合同明细',
         title: '',
         signTime: '',
@@ -252,7 +261,8 @@
           proportions: [{ required: true, message: '抽成比例不能为空', trigger: 'change' }]
         },
         rule: {
-          typePaye: [{ required: true, message: '类型不能为空', trigger: 'change' }],
+          typePaye: [{ required: true, message: '收支类型不能为空', trigger: 'change' }],
+          costType: [{ required: true, message: '费用类型不能为空', trigger: 'change' }],
           payer: [{ required: true, message: '付款人不能为空', trigger: 'change' }],
           payee: [{ required: true, message: '收款人不能为空', trigger: 'change' }],
           amount: [{ required: true, message: '金额不能为空', trigger: 'change' }]
@@ -272,6 +282,9 @@
         })
         getConfig(this.typePay).then(response => {
           this.typePayOptions = response.data.items
+        })
+        getConfig(this.costType).then(response => {
+          this.costTypeOptions = response.data.items
         })
       },
       getList() {

@@ -27,18 +27,18 @@
 
     <!-- 表格 start -->
     <el-table :key='tableKey' :data="list" v-loading="listLoading" border fit highlight-current-row
-              style="width: 100%;min-height:600px;" @row-click="handdle">
+              style="width: 100%;min-height:100%;" @row-click="handdle">
       <el-table-column align="center" label="序号" width="60">
         <template slot-scope="scope">
           <span>{{scope.$index+1}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="合同编码" min-width="90">
-      <template slot-scope="scope">
-        <span>{{scope.row.number}}</span>
-      </template>
-    </el-table-column>
-      <el-table-column align="center" label="父合同编码" min-width="90">
+      <el-table-column align="center" label="合同编码" width="140">
+        <template slot-scope="scope">
+          <span>{{scope.row.number}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="父合同编码" width="140">
         <template slot-scope="scope">
           <span>{{scope.row.parent}}</span>
         </template>
@@ -48,12 +48,12 @@
           <span>{{scope.row.title}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="甲方" width="80">
+      <el-table-column align="center" label="甲方" width="90">
         <template slot-scope="scope">
           <span>{{scope.row.customer_a_Name}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="乙方" width="80">
+      <el-table-column align="center" label="乙方" width="90">
         <template slot-scope="scope">
           <span>{{scope.row.customer_b_Name}}</span>
         </template>
@@ -84,7 +84,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column width="80" align="center" label="状态">
+      <el-table-column width="90" align="center" label="状态">
         <template slot-scope="scope">
           <span>{{scope.row.statusName}}</span>
         </template>
@@ -129,6 +129,12 @@
         <el-form-item label-width="110px" label="合同名称"  prop="title" class="postInfo-container-item">
           <el-input v-model="temp.title" required placeholder="请输入合同名称"></el-input>
         </el-form-item>
+        <el-form-item label-width="110px" label="商品名称" prop="goods" class="postInfo-container-item">
+          <el-select v-model="temp.goods" required multiple placeholder="请选择">
+            <el-option v-for="item in goodsOptions" :key="item.goodsId" :label="item.name" :value="item.goodsId">
+            </el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item label-width="110px" label="甲方" prop="customerKeyA" class="postInfo-container-item">
           <el-select v-model="temp.customerKeyA" required filterable placeholder="请选择">
             <el-option v-for="item in userListOptions" :key="item.customerId" :label="item.customerName" :value="item.customerId">
@@ -147,12 +153,9 @@
         <el-form-item label-width="110px" label="税率" prop="taxlimit" class="postInfo-container-item">
           <el-input type="number" v-model.number ="temp.taxlimit" required placeholder="请输入税率"></el-input>
         </el-form-item>
-        <!--<el-form-item label-width="110px" label="税额" prop="tax" class="postInfo-container-item">-->
-          <!--<el-input type="number" v-model.number ="temp.tax" required placeholder="请输入税额"></el-input>-->
-        <!--</el-form-item>-->
         <el-form-item label-width="110px" label="币种" prop="currency" class="postInfo-container-item">
           <el-select v-model="temp.currency" style="width: 100px" >
-              <el-option v-for="item in currencyOptions" :key="item.keyWord" :label="item.name" :value="item.keyWord" >
+            <el-option v-for="item in currencyOptions" :key="item.keyWord" :label="item.name" :value="item.keyWord" >
             </el-option>
           </el-select>
         </el-form-item>
@@ -207,6 +210,7 @@
   import { contractList, createContract, updateContract, deleteContract, createcontractSub } from '@/api/contract'
   import { toThousands, commafyback } from '@/utils/common'
   import { customerList } from '@/api/customer'
+  import { goodsList } from '@/api/goods'
   import { getConfig } from '@/api/user'
   import waves from '@/directive/waves' // 水波纹指令
   import store from '@/store'
@@ -235,10 +239,12 @@
         userListOptions: [],
         currencyOptions: [],
         contractOptions: [],
+        goodsOptions: [],
         sortOptions: [{ label: '时间正序', key: 'lastCreateTime ASC' }, { label: '时间倒序', key: 'lastCreateTime DESC' }],
         temp: {
           id: undefined,
           title: '',
+          goods: '',
           money: '',
           money_init: '',
           paid: '',
@@ -273,6 +279,7 @@
         },
         rule: {
           title: [{ required: true, message: '标题不能为空', trigger: 'change' }],
+          goods: [{ required: true, message: '商品不能为空', trigger: 'change' }],
           customerKeyA: [{ required: true, message: '甲方不能为空', trigger: 'change' }],
           customerKeyB: [{ required: true, message: '乙方不能为空', trigger: 'change' }],
           money_init: [{ required: true, message: '合同总金额不能为空', trigger: 'change' }],
@@ -329,6 +336,10 @@
           if (!response.data.items) return
           this.userListOptions = response.data.items
         })
+        goodsList(this.listQuery).then(response => {
+          if (!response.data.items) return
+          this.goodsOptions = response.data.items
+        })
       },
       handdle(row) {
         this.$router.push({ path: 'detail', query: { id: row.id }})
@@ -373,6 +384,7 @@
         this.temp = {
           id: undefined,
           title: '',
+          goods: '',
           money: '',
           money_init: '',
           contractType: '',
@@ -421,11 +433,11 @@
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
             this.listLoading = true
-            this.temp.contractType = 'ZL'
+            this.temp.contractType = 'XS'
             createContract(this.temp).then(response => {
               if (response.code === 50001) {
                 store.dispatch('GetRefreshToken').then(() => {
-                  this.createSubData()
+                  this.createData()
                 })
               }
               if (response.code === 200) {
@@ -482,22 +494,28 @@
             const tempData = Object.assign({}, this.temp)
             tempData.timestamp = +new Date(tempData.timestamp)
             this.listLoading = true
-            updateContract(tempData).then(() => {
-              for (const v of this.list) {
-                if (v.id === this.temp.id) {
-                  const index = this.list.indexOf(v)
-                  this.list.splice(index, 1, this.temp)
-                  break
-                }
+            updateContract(tempData).then((response) => {
+              if (response.code === 50001) {
+                store.dispatch('GetRefreshToken').then(() => {
+                  this.updateData()
+                })
               }
-              this.dialogFormVisible = false
-              this.$notify({
-                title: '成功',
-                message: '更新成功',
-                type: 'success',
-                duration: 2000
-              })
-              this.getList()
+              if (response.code === 200) {
+                for (const v of this.list) {
+                  if (v.id === this.temp.id) {
+                    const index = this.list.indexOf(v)
+                    this.list.splice(index, 1, this.temp)
+                    break
+                  }
+                }
+                this.dialogFormVisible = false
+                this.$notify({
+                  title: '成功',
+                  message: '更新成功',
+                  type: 'success',
+                  duration: 2000
+                })
+              }
             })
           }
         })

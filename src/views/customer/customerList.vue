@@ -32,7 +32,7 @@
 
     <!-- 表格 start -->
     <el-table :key='tableKey' :data="list" v-loading="listLoading" border fit highlight-current-row
-              style="width: 100%;min-height:1000px;">
+              style="width: 100%;min-height:100%;">
       <el-table-column type="expand">
         <template slot-scope="scope">
           <el-form label-position="left" inline class="table-expand">
@@ -193,7 +193,7 @@
         btnLoading: false,
         listQuery: {
           pageNum: 1,
-          pageSize: 20,
+          pageSize: 10,
           customerName: undefined,
           sex: undefined,
           typeKey: undefined,

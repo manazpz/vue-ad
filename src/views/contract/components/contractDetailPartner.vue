@@ -2,7 +2,7 @@
   <div class="app-container">
     <!-- 表格 start -->
     <el-table :key='tableKey' :data="list" v-loading="listLoading" border fit highlight-current-row
-              style="width: 100%;min-height:600px;">
+              style="width: 100%;min-height:100%;">
       <el-table-column align="center" label="序号" width="60">
         <template slot-scope="scope">
           <span>{{scope.$index+1}}</span>

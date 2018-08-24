@@ -8,62 +8,32 @@
           <span>{{scope.$index+1}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="合同编码" width="140">
+      <el-table-column align="center" label="商品名称" min-width="90">
         <template slot-scope="scope">
-          <span>{{scope.row.number}}</span>
+          <span>{{scope.row.name}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="父合同编码" width="140">
+      <el-table-column align="center" label="商品编码" min-width="90">
         <template slot-scope="scope">
-          <span>{{scope.row.parent}}</span>
+          <span>{{scope.row.code}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="合同名称" min-width="90">
+      <el-table-column align="center" label="商品类型" min-width="90">
         <template slot-scope="scope">
-          <span>{{scope.row.title}}</span>
+          <span>{{scope.row.types}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="甲方" width="90">
+      <el-table-column align="center" label="单位" min-width="90">
         <template slot-scope="scope">
-          <span>{{scope.row.customer_a_Name}}</span>
+          <span>{{scope.row.unit}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="乙方" width="90">
+      <el-table-column align="center" label="价格" min-width="90">
         <template slot-scope="scope">
-          <span>{{scope.row.customer_b_Name}}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="总金额" width="90">
-        <template slot-scope="scope">
-          <span>{{scope.row.money_init}}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="已收金额" width="90">
-        <template slot-scope="scope">
-          <span>{{scope.row.paid}}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="盈利" width="90">
-        <template slot-scope="scope">
-          <span>{{scope.row.income}}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="签署时间" min-width="90">
-        <template slot-scope="scope">
-          <span>{{scope.row.signTime}}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="到期时间" min-width="90">
-        <template slot-scope="scope">
-          <span>{{scope.row.expireTime}}</span>
+          <span>{{scope.row.price}}</span>
         </template>
       </el-table-column>
 
-      <el-table-column width="90" align="center" label="状态">
-        <template slot-scope="scope">
-          <span>{{scope.row.statusName}}</span>
-        </template>
-      </el-table-column>
     </el-table>
     <!-- 表格 end -->
 
@@ -82,12 +52,12 @@
 </template>
 
 <script>
-  import { contractSubList } from '@/api/contract'
+  import { contractGoodsList } from '@/api/contract'
   import { toThousands } from '@/utils/common'
   import waves from '@/directive/waves' // 水波纹指令
   import store from '@/store'
   export default {
-    name: 'contractDetailSub',
+    name: 'contractDetailGoods',
     directives: {
       waves
     },
@@ -106,21 +76,11 @@
         },
         temp: {
           id: undefined,
-          title: '',
-          money: '',
-          money_init: '',
-          paid: '',
-          unpaid: '',
-          expenses: '',
-          signTime: '',
-          expireTime: '',
-          income: '',
-          customerKeyA: '',
-          customerKeyB: '',
-          tax: '',
-          taxlimit: '',
-          currency: '',
-          reamrks1: '',
+          code: '',
+          name: '',
+          unit: '',
+          types: '',
+          price: '',
           status: 'published'
         },
         rules: {
@@ -134,7 +94,7 @@
     methods: {
       getList() {
         this.listLoading = true
-        contractSubList(this.listQuery).then(response => {
+        contractGoodsList(this.listQuery).then(response => {
           if (response.code === 50001) {
             store.dispatch('GetRefreshToken').then(() => {
               this.getList()
@@ -144,9 +104,7 @@
             this.list = response.data.items
             this.total = response.data.total
             this.list.forEach(function(c) {
-              c.money_init = toThousands(c.money_init)
-              c.paid = toThousands(c.paid)
-              c.income = toThousands(c.income)
+              c.price = toThousands(c.price)
             })
             setTimeout(() => {
               this.listLoading = false

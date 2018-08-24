@@ -33,7 +33,7 @@
 
     <!-- 表格 start -->
     <el-table :key='tableKey' :data="list" v-loading="listLoading" border fit highlight-current-row
-              style="width: 100%;min-height:1000px;">
+              style="width: 100%;min-height:100%;">
       <el-table-column align="center" :label="$t('table.no')" width="60">
         <template slot-scope="scope">
           <span>{{scope.$index+1}}</span>

@@ -100,7 +100,14 @@ export function attaList(query) {
   return request({
     url: '/contract/getReasourse',
     method: 'get',
-    responseType: 'blob',
     params: query
+  })
+}
+
+export function contractGoodsList(params) {
+  return request({
+    url: '/contract/contractGoodList',
+    method: 'POST',
+    data: params
   })
 }
