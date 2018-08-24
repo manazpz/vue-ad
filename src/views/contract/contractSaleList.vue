@@ -160,11 +160,11 @@
           </el-select>
         </el-form-item>
         <el-form-item label-width="110px" label="签署时间" prop="signTime" class="postInfo-container-item">
-          <el-date-picker v-model="temp.signTime" type="datetime" required placeholder="选择日期时间">
+          <el-date-picker v-model="temp.signTime" type="date" required placeholder="选择日期时间">
           </el-date-picker>
         </el-form-item>
         <el-form-item label-width="110px" label="到期时间" prop="expireTime" class="postInfo-container-item">
-          <el-date-picker v-model="temp.expireTime" type="datetime" required placeholder="选择日期时间">
+          <el-date-picker v-model="temp.expireTime" type="date" required placeholder="选择日期时间">
           </el-date-picker>
         </el-form-item>
         <el-form-item label-width="110px" label="摘要"  class="postInfo-container-item">
