@@ -72,7 +72,7 @@
   </div>
 </template>
 <script>
-  import { contractAttaList, attaList } from '@/api/contract'
+  import { contractAttaList } from '@/api/contract'
   import store from '@/store'
   export default {
     name: 'contractDetailPartner',

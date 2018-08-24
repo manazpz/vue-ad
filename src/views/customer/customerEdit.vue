@@ -137,7 +137,7 @@
                   duration: 2000
                 })
                 this.loading = false
-                this.$router.push({ path: '/customer/list' })
+                this.closeSelectedTag(this.$route)
               }
             }).catch(() => {
               this.loading = false
@@ -145,6 +145,11 @@
           } else {
             return false
           }
+        })
+      },
+      closeSelectedTag(view) {
+        this.$store.dispatch('delVisitedViews', view).then((views) => {
+          this.$router.push({ path: '/customer/list' })
         })
       }
     }

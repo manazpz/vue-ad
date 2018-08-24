@@ -1,6 +1,6 @@
 export default {
   route: {
-    ms: '管理系统',
+    ms: '合同管理系统',
     dashboard: '首页',
     logoUpload: 'LOGO上传',
     avatarUpload: '头像上传',
