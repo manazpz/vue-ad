@@ -207,7 +207,7 @@
 </template>
 
 <script>
-  import { contractList, createContract, updateContract, deleteContract, createcontractSub, contractGoodsList } from '@/api/contract'
+  import { contractList, createContract, updateContract, deleteContract, createcontractSub } from '@/api/contract'
   import { toThousands, commafyback } from '@/utils/common'
   import { customerList } from '@/api/customer'
   import { goodsList } from '@/api/goods'
@@ -341,7 +341,6 @@
         goodsList(this.listQuery).then(response => {
           if (!response.data.items) return
           this.goodsOptions = response.data.items
-          debugger
         })
       },
       handdle(row) {

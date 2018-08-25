@@ -129,8 +129,8 @@
         <el-form-item label-width="110px" label="合同名称"  prop="title" class="postInfo-container-item">
           <el-input v-model="temp.title" required placeholder="请输入合同名称"></el-input>
         </el-form-item>
-        <el-form-item label-width="110px" label="商品名称" prop="goods" class="postInfo-container-item">
-          <el-select v-model="temp.goods" required multiple placeholder="请选择">
+        <el-form-item label-width="110px" label="商品名称" prop="goodsIds" class="postInfo-container-item">
+          <el-select v-model="temp.goodsIds" required multiple placeholder="请选择">
             <el-option v-for="item in goodsOptions" :key="item.goodsId" :label="item.name" :value="item.goodsId">
             </el-option>
           </el-select>
@@ -226,6 +226,7 @@
         total: null,
         listLoading: true,
         listQuery: {
+          id: undefined,
           pageNum: 1,
           pageSize: 10,
           name: undefined,
@@ -245,6 +246,7 @@
           id: undefined,
           title: '',
           goods: '',
+          goodsIds: '',
           money: '',
           money_init: '',
           paid: '',
@@ -279,7 +281,7 @@
         },
         rule: {
           title: [{ required: true, message: '标题不能为空', trigger: 'change' }],
-          goods: [{ required: true, message: '商品不能为空', trigger: 'change' }],
+          goodsIds: [{ required: true, message: '商品不能为空', trigger: 'change' }],
           customerKeyA: [{ required: true, message: '甲方不能为空', trigger: 'change' }],
           customerKeyB: [{ required: true, message: '乙方不能为空', trigger: 'change' }],
           money_init: [{ required: true, message: '合同总金额不能为空', trigger: 'change' }],
@@ -385,6 +387,7 @@
           id: undefined,
           title: '',
           goods: '',
+          goodsIds: '',
           money: '',
           money_init: '',
           contractType: '',
@@ -501,6 +504,7 @@
                 })
               }
               if (response.code === 200) {
+                this.getList()
                 for (const v of this.list) {
                   if (v.id === this.temp.id) {
                     const index = this.list.indexOf(v)
@@ -508,6 +512,7 @@
                     break
                   }
                 }
+                this.listLoading = false
                 this.dialogFormVisible = false
                 this.$notify({
                   title: '成功',
@@ -519,8 +524,6 @@
             })
           }
         })
-      },
-      handleDelete(row) {
       }
     }
   }

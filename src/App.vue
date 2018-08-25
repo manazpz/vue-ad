@@ -20,7 +20,7 @@
       methods: {
         reload() {
           this.isRouterAlive = false
-          this.$nextTick(function () {
+          this.$nextTick(function() {
             this.isRouterAlive = true
           })
         }
