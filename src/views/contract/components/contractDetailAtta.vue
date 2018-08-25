@@ -109,6 +109,7 @@
             })
           }
           if (response.code === 200) {
+            this.getList()
             this.list = response.data.items
             this.total = response.data.total
             setTimeout(() => {

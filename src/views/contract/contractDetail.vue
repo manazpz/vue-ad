@@ -190,6 +190,7 @@
   import goods from './components/contractDetailGoods'
   export default {
     name: 'contractDetail',
+    inject: ['reload'],
     components: { Sticky, subContract, partner, msgContract, contractPay, atta, goods },
     data: function() {
       return {
@@ -408,7 +409,7 @@
                 })
               }
               if (response.code === 200) {
-                this.getList()
+                this.reload()
                 this.listLoading = false
                 this.dialogFormVisible = false
                 this.$notify({
@@ -441,7 +442,7 @@
                 })
               }
               if (response.code === 200) {
-                this.getList()
+                this.reload()
                 this.listLoading = false
                 this.dialogExpnsesVisible = false
                 this.$notify({

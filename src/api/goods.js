@@ -30,3 +30,11 @@ export function deleteGoods(params) {
     data: params
   })
 }
+
+export function goodsContract(query) {
+  return request({
+    url: '/goods/goodslist',
+    method: 'get',
+    params: query
+  })
+}

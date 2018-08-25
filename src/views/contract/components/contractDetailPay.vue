@@ -8,9 +8,14 @@
           <span>{{scope.$index+1}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="类型" min-width="110">
+      <el-table-column align="center" label="收支类型" min-width="110">
         <template slot-scope="scope">
           <span>{{scope.row.type}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="费用类型" min-width="110">
+        <template slot-scope="scope">
+          <span>{{scope.row.costType}}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" label="金额" min-width="110">
@@ -26,6 +31,11 @@
       <el-table-column align="center" label="付款人" min-width="110">
         <template slot-scope="scope">
           <span>{{scope.row.payer}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="备注" min-width="110">
+        <template slot-scope="scope">
+          <span>{{scope.row.remarks1}}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" label="创建时间" min-width="130">
