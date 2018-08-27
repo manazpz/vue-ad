@@ -80,11 +80,19 @@ export function cancleExpnses(params) {
   })
 }
 
-export function expnsesList(params) {
+export function updateExpnss(params) {
   return request({
-    url: '/contract/queryExpnses',
+    url: '/contract/updateExpnss',
     method: 'POST',
     data: params
+  })
+}
+
+export function expnsesList(query) {
+  return request({
+    url: '/contract/queryExpnses',
+    method: 'get',
+    params: query
   })
 }
 
@@ -107,6 +115,38 @@ export function attaList(query) {
 export function contractGoodsList(params) {
   return request({
     url: '/contract/contractGoodList',
+    method: 'POST',
+    data: params
+  })
+}
+
+export function deleteAtta(params) {
+  return request({
+    url: '/contract/deleteAtta',
+    method: 'POST',
+    data: params
+  })
+}
+
+export function deleteContractPay(params) {
+  return request({
+    url: '/contract/deletePay',
+    method: 'POST',
+    data: params
+  })
+}
+
+export function updatePartner(params) {
+  return request({
+    url: '/contract/updatePartner',
+    method: 'POST',
+    data: params
+  })
+}
+
+export function deleteContractPaetenr(params) {
+  return request({
+    url: '/contract/deletePartner',
     method: 'POST',
     data: params
   })

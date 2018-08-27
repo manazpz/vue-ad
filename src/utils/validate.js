@@ -113,3 +113,12 @@ export const checkNo = (rule, value, callback) => {
   }
 }
 
+export function check_zh(rule, value, callback) {
+  const number = /^[^\u4e00-\u9fa5]+$/
+  if (number.test(value)) {
+    return callback()
+  } else {
+    return callback(new Error('合同编码不能为中文'))
+  }
+}
+

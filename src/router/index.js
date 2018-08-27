@@ -72,6 +72,13 @@ export const asyncRouterMap = [
       hidden: true,
       name: 'contractDetail',
       meta: { title: 'contractDetail', noCache: true }
+    },
+    {
+      path: 'detailSub',
+      component: () => import('@/views/contract/contractSubDetail'),
+      hidden: true,
+      name: 'contractSubDetail',
+      meta: { title: 'contractSubDetail', noCache: true }
     }]
   },
 

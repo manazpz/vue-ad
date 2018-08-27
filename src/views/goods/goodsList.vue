@@ -98,11 +98,8 @@
       <el-table-column align="center" label="操作" width="150" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">{{$t('table.edit')}}</el-button>
-          <el-button v-if="scope.row.status === 'Y'" size="mini" type="danger"
+          <el-button  size="mini" type="danger"
                      @click="handleModifyStatus(scope.row, 'N')">{{$t('table.delete')}}
-          </el-button>
-          <el-button  v-else size="mini" type="success"
-                      @click="handleModifyStatus(scope.row, 'Y')">{{$t('table.recovery')}}
           </el-button>
         </template>
       </el-table-column>
@@ -272,6 +269,7 @@
             })
           }
           if (response.code === 200) {
+            this.getList()
             this.listLoading = false
             this.dialogFormVisible = false
             this.$message({

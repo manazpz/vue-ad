@@ -91,21 +91,9 @@
       </el-table-column>
       <el-table-column align="center" label="操作" width="150" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <!--<el-button type="primary" size="mini" @click="handleUpdate(scope.row)">{{$t('table.edit')}}</el-button>-->
-          <el-dropdown>
-            <el-button type="success" size="mini" >
-              操作<i class="el-icon-arrow-down el-icon--right"></i>
-            </el-button>
-            <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item @click.native = "handleUpdate(scope.row)">编辑</el-dropdown-item>
-              <el-dropdown-item @click.native = "creatSub(scope.row)">新增子合同</el-dropdown-item>
-            </el-dropdown-menu>
-          </el-dropdown>
-          <el-button v-if="scope.row.del === 'Y'" size="mini" type="danger"
-                     @click="handleModifyStatus(scope.row, 'N')">{{$t('table.delete')}}
-          </el-button>
-          <el-button  v-else size="mini" type="success"
-                      @click="handleModifyStatus(scope.row, 'Y')">{{$t('table.recovery')}}
+          <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">{{$t('table.edit')}}</el-button>
+          <el-button size="mini" type="danger"
+                     @click="handleModifyStatus(scope.row, 'Y')">{{$t('table.delete')}}
           </el-button>
         </template>
       </el-table-column>
@@ -129,9 +117,18 @@
         <el-form-item label-width="110px" label="合同名称"  prop="title" class="postInfo-container-item">
           <el-input v-model="temp.title" required placeholder="请输入合同名称"></el-input>
         </el-form-item>
+        <el-form-item label-width="110px" label="合同编号"  prop="number" class="postInfo-container-item">
+          <el-input  v-model="temp.number"  required placeholder="请输入合同编号"></el-input>
+        </el-form-item>
         <el-form-item label-width="110px" label="商品名称" prop="goodsIds" class="postInfo-container-item">
           <el-select v-model="temp.goodsIds" required multiple placeholder="请选择">
             <el-option v-for="item in goodsOptions" :key="item.goodsId" :label="item.name" :value="item.goodsId">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label-width="110px" label="添加子合同"  class="postInfo-container-item">
+          <el-select v-model="temp.subContract" filterable placeholder="请选择父合同编号">
+            <el-option v-for="item in contractOptions" :key="item.id" :label="item.title" :value="item.id">
             </el-option>
           </el-select>
         </el-form-item>
@@ -170,7 +167,26 @@
         <el-form-item label-width="110px" label="摘要"  class="postInfo-container-item">
           <el-input v-model="temp.reamrks1" type="textarea"  :rows="5"  placeholder="请摘要内容"></el-input>
         </el-form-item>
+        <el-upload
+          ref="foreignPersonUploadItem"
+          class="avatar-uploader"
+          :action="uploadUrl"
+          v-model="temp.file"
+          name="file"
+          :show-file-list="true"
+          :multiple="true"
+          :limit="9"
+          :file-list="fileList"
+          :on-change="OnChange"
+          :before-remove="beforeRemove"
+          :on-remove="handleRemove"
+          :on-success="handleAvatarSuccess"
+          accept=".jpg,.jpeg,.png,.gif,.pdf,.doc,.docx,.xls,.xlsx,.JPG,.JPEG,.PBG,.GIF,.PDF,.DOC,.DOCX,.XLS,.XLSX"
+          :before-upload="beforeAvatarUpload">
+          <el-button type="text">上传附件</el-button>
+        </el-upload>
       </el-form>
+
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">{{$t('table.cancel')}}</el-button>
         <el-button v-if="dialogStatus=='新增合同'" type="primary" @click="createData">{{$t('table.confirm')}}</el-button>
@@ -179,52 +195,38 @@
     </el-dialog>
     <!-- 弹出框 end -->
 
-    <!-- 弹出框新增子合同 start -->
-    <el-dialog :title="dialogSubStatus" :visible.sync="dialogFormSubVisible">
-      <el-form :rules="rules" ref="dataSubForm" :model="temps" label-position="left" label-width="70px"
-               style='width: 400px; margin-left:50px;'>
-        <el-form-item label-width="110px" label="甲方" prop="customerA" class="postInfo-container-item">
-          <el-select v-model="temps.customerA" required filterable placeholder="请选择">
-            <el-option v-for="item in userListOptions" :key="item.customerId" :label="item.customerName" :value="item.customerId">
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label-width="110px" label="乙方" prop="customerB" class="postInfo-container-item">
-          <el-select v-model="temps.customerB" required filterable placeholder="请选择">
-            <el-option v-for="item in userListOptions" :key="item.customerId" :label="item.customerName" :value="item.customerId">
-            </el-option>
-          </el-select>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormSubVisible = false">{{$t('table.cancel')}}</el-button>
-        <el-button type="primary" @click="createSubData">{{$t('table.confirm')}}</el-button>
-      </div>
-    </el-dialog>
-    <!-- 弹出框新增子合同 end -->
-
   </div>
 </template>
 
 <script>
-  import { contractList, createContract, updateContract, deleteContract, createcontractSub } from '@/api/contract'
+  import { contractList, createContract, updateContract, deleteContract } from '@/api/contract'
   import { toThousands, commafyback } from '@/utils/common'
   import { customerList } from '@/api/customer'
   import { goodsList } from '@/api/goods'
   import { getConfig } from '@/api/user'
+  import { check_zh } from '@/utils/validate'
   import waves from '@/directive/waves' // 水波纹指令
   import store from '@/store'
   export default {
     name: 'contractList',
+    inject: ['reload'],
     directives: {
       waves
     },
     data() {
       return {
+        uploadUrl: process.env.BASE_API + '/contract/uploadFile',
         tableKey: 0,
         list: null,
         total: null,
         listLoading: true,
+        fileList: [],
+        file: [],
+        size: [],
+        suffix: [],
+        name: [],
+        falg: true,
+        params: null,
         listQuery: {
           id: undefined,
           pageNum: 1,
@@ -247,9 +249,18 @@
           title: '',
           goods: '',
           goodsIds: '',
+          subContract: '',
           money: '',
           money_init: '',
           paid: '',
+          number: '',
+          file: [],
+          url: '',
+          fileList: [],
+          size: [],
+          suffix: [],
+          types: '',
+          name: [],
           contractType: '',
           unpaid: '',
           expenses: '',
@@ -282,11 +293,10 @@
         rule: {
           title: [{ required: true, message: '标题不能为空', trigger: 'change' }],
           goodsIds: [{ required: true, message: '商品不能为空', trigger: 'change' }],
+          number: [{ required: false, validator: check_zh, trigger: 'blur' }],
           customerKeyA: [{ required: true, message: '甲方不能为空', trigger: 'change' }],
           customerKeyB: [{ required: true, message: '乙方不能为空', trigger: 'change' }],
           money_init: [{ required: true, message: '合同总金额不能为空', trigger: 'change' }],
-          // paid: [{ required: true, message: '合同已付金额不能为空', trigger: 'change' }],
-          // tax: [{ required: true, message: '合同税额不能为空', trigger: 'change' }],
           taxlimit: [{ required: true, message: '合同税率不能为空', trigger: 'change' }],
           currency: [{ required: true, message: '币种不能为空', trigger: 'change' }],
           signTime: [{ required: true, message: '合同签署时间不能为空', trigger: 'change' }],
@@ -342,9 +352,17 @@
           if (!response.data.items) return
           this.goodsOptions = response.data.items
         })
+        contractList(this.listQuery).then(response => {
+          if (!response.data.items) return
+          this.contractOptions = response.data.items
+        })
       },
       handdle(row) {
-        this.$router.push({ path: 'detail', query: { id: row.id }})
+        if (this.falg) {
+          this.$router.push({ path: 'detail', query: { id: row.id }})
+        } else {
+          this.falg = true
+        }
       },
       handleFilter() {
         this.listQuery.pageNum = 1
@@ -358,28 +376,58 @@
         this.listQuery.pageNum = val
         this.getList()
       },
+      handleRemove(file, fileList) {
+      },
+      beforeRemove(file, fileList) {
+        this.$confirm('此操作将删除附件, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.file.push(file.id)
+        }).catch(_ => {
+          return
+        })
+      },
+      OnChange(file, fileList) {
+        this.fileList = fileList
+      },
+      handleAvatarSuccess(response, file, fileList) {
+        this.temp.file.push({ url: response.data.url, id: '' })
+        this.temp.size.push(response.data.size)
+        this.temp.suffix.push(response.data.suffix)
+        this.temp.types = 'HT'
+        this.temp.name.push(response.data.name)
+      },
+      beforeAvatarUpload(file) {
+      },
       handleModifyStatus(row, isValid) {
-        this.listLoading = true
-
-        const params = { id: row.id, isValid: isValid }
-        deleteContract(params).then(response => {
-          if (response.code === 50001) {
-            store.dispatch('GetRefreshToken').then(() => {
-              this.handleModifyStatus(row, isValid)
-            })
-          }
-          if (response.code === 200) {
-            this.getList()
+        this.falg = false
+        this.$confirm('您确定删除吗？').then(_ => {
+          this.listLoading = true
+          const params = { id: row.id, isValid: isValid }
+          deleteContract(params).then(response => {
+            if (response.code === 50001) {
+              store.dispatch('GetRefreshToken').then(() => {
+                this.handleModifyStatus(row, isValid)
+              })
+            }
+            if (response.code === 200) {
+              this.getList()
+              this.listLoading = false
+              this.dialogFormVisible = false
+              this.$message({
+                message: '操作成功',
+                type: 'success'
+              })
+              row.del = isValid
+            }
+          }).catch(() => {
             this.listLoading = false
-            this.dialogFormVisible = false
-            this.$message({
-              message: '操作成功',
-              type: 'success'
-            })
-            row.del = isValid
-          }
-        }).catch(() => {
-          this.listLoading = false
+            this.falg = true
+          })
+        }).catch(_ => {
+          return
         })
       },
       resetTemp() {
@@ -388,9 +436,18 @@
           title: '',
           goods: '',
           goodsIds: '',
+          subContract: '',
           money: '',
           money_init: '',
           contractType: '',
+          number: '',
+          file: [],
+          fileId: [],
+          fileList: [],
+          size: [],
+          suffix: [],
+          types: '',
+          name: [],
           paid: '',
           unpaid: '',
           expenses: '',
@@ -407,8 +464,13 @@
         }
       },
       resetSubTemp() {
-        this.temps = {
+        this.temp = {
           id: undefined,
+          file: [],
+          size: [],
+          suffix: [],
+          types: '',
+          name: '',
           customerA: '',
           customerB: '',
           reamrks1: '',
@@ -423,15 +485,6 @@
           this.$refs['dataForm'].clearValidate()
         })
       },
-      creatSub(row) {
-        this.resetSubTemp()
-        this.temps.id = row.id
-        this.dialogSubStatus = '新增子合同'
-        this.dialogFormSubVisible = true
-        this.$nextTick(() => {
-          this.$refs['dataSubForm'].clearValidate()
-        })
-      },
       createData() {
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
@@ -444,7 +497,7 @@
                 })
               }
               if (response.code === 200) {
-                this.getList()
+                this.reload()
                 this.dialogFormVisible = false
                 this.$notify({
                   title: '成功',
@@ -457,32 +510,10 @@
           }
         })
       },
-      createSubData() {
-        this.$refs['dataSubForm'].validate((valid) => {
-          if (valid) {
-            this.listLoading = true
-            createcontractSub(this.temps).then(response => {
-              if (response.code === 50001) {
-                store.dispatch('GetRefreshToken').then(() => {
-                  this.createSubData()
-                })
-              }
-              if (response.code === 200) {
-                this.getList()
-                this.dialogFormSubVisible = false
-                this.$notify({
-                  title: '成功',
-                  message: '创建成功',
-                  type: 'success',
-                  duration: 2000
-                })
-              }
-            })
-          }
-        })
-      },
       handleUpdate(row) {
-        this.temp = Object.assign({}, row) // copy obj
+        this.falg = false
+        this.fileList = row.fileList
+        this.temp = Object.assign({}, row)
         this.temp.money_init = commafyback(this.temp.money_init)
         this.temp.timestamp = new Date(this.temp.timestamp)
         this.dialogStatus = '编辑合同'
@@ -494,9 +525,11 @@
       updateData() {
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
+            this.temp.fileId = this.file
             const tempData = Object.assign({}, this.temp)
             tempData.timestamp = +new Date(tempData.timestamp)
             this.listLoading = true
+            debugger
             updateContract(tempData).then((response) => {
               if (response.code === 50001) {
                 store.dispatch('GetRefreshToken').then(() => {
@@ -528,3 +561,8 @@
     }
   }
 </script>
+<!--<style rel="stylesheet/scss" lang="scss" scoped>-->
+<!--.avatar-uploader {-->
+<!--margin-left: 45px !important;-->
+<!--}-->
+<!--</style>-->

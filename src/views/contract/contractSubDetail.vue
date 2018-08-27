@@ -84,6 +84,12 @@
             </el-option>
           </el-select>
         </el-form-item>
+        <el-form-item label-width="110px" label="客户性质" prop="types" class="postInfo-container-item">
+          <el-select v-model="temp.types" style="width: 100px" >
+            <el-option v-for="item in typeOptions" :key="item.keyWord" :label="item.name" :value="item.keyWord" >
+            </el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item label-width="110px" label="当前收益" class="postInfo-container-item">
           <el-input v-model="temp.income" disabled true></el-input>
         </el-form-item>
@@ -106,8 +112,8 @@
       <el-dialog :title="dialogExpnses" :visible.sync="dialogExpnsesVisible">
         <el-form :rules="rule" ref="dataFormExpnses" :model="temps" label-position="left" label-width="70px"
                  style='width: 400px; margin-left:50px;'>
-          <el-form-item label-width="110px" label="收支类型" prop="typePayes" class="postInfo-container-item">
-            <el-select v-model="temps.typePayes" required filterable placeholder="请选择">
+          <el-form-item label-width="110px" label="收支类型" prop="typePaye" class="postInfo-container-item">
+            <el-select v-model="temps.typePaye" required filterable placeholder="请选择">
               <el-option v-for="item in typePayOptions" :key="item.keyWord" :label="item.name" :value="item.keyWord" >
               </el-option>
             </el-select>
@@ -136,25 +142,25 @@
           <el-form-item label-width="110px" label="摘要"  class="postInfo-container-item">
             <el-input v-model="temps.reamrks1" type="textarea"  :rows="5"  placeholder="请摘要内容"></el-input>
           </el-form-item>
-          <el-upload
-            ref="foreignPersonUploadItem"
-            class="avatar-uploader"
-            :action="uploadUrl"
-            v-model="temps.file"
-            name="file"
-            :show-file-list="true"
-            :multiple="true"
-            :limit="9"
-            :file-list="fileList"
-            :on-change="OnChange"
-            :on-remove="OnRemove"
-            :before-remove="beforeRemove"
-            :on-success="handleAvatarSuccess"
-            accept=".jpg,.jpeg,.png,.gif,.pdf,.doc,.docx,.xls,.xlsx,.JPG,.JPEG,.PBG,.GIF,.PDF,.DOC,.DOCX,.XLS,.XLSX"
-            :before-upload="beforeAvatarUpload">
-            <el-button type="text">上传附件</el-button>
-          </el-upload>
         </el-form>
+        <el-upload
+          ref="foreignPersonUploadItem"
+          class="avatar-uploader"
+          :action="uploadUrl"
+          v-model="temps.file"
+          name="file"
+          :show-file-list="true"
+          :multiple="true"
+          :limit="9"
+          :file-list="fileList"
+          :on-change="OnChange"
+          :on-remove="OnRemove"
+          :before-remove="beforeRemove"
+          :on-success="handleAvatarSuccess"
+          accept=".jpg,.jpeg,.png,.gif,.pdf,.doc,.docx,.xls,.xlsx,.JPG,.JPEG,.PBG,.GIF,.PDF,.DOC,.DOCX,.XLS,.XLSX"
+          :before-upload="beforeAvatarUpload">
+        <el-button type="text">上传附件</el-button>
+        </el-upload>
         <div slot="footer" class="dialog-footer">
           <el-button @click="cancleDataExpnses">{{$t('table.cancel')}}</el-button>
           <el-button type="primary" @click="createDataExpnses">{{$t('table.confirm')}}</el-button>
@@ -176,6 +182,7 @@
   import { customerList } from '@/api/customer'
   import { getConfig } from '@/api/user'
   import store from '@/store'
+  import router from '@/router'
   import msgContract from './components/contractDetailMsg'
   import contractPay from './components/contractDetailPay'
   import subContract from './components/contractDetailSub'
@@ -183,7 +190,7 @@
   import atta from './components/contractDetailAtta'
   import goods from './components/contractDetailGoods'
   export default {
-    name: 'contractDetail',
+    name: 'contractSubDetail',
     inject: ['reload'],
     components: { Sticky, subContract, partner, msgContract, contractPay, atta, goods },
     data: function() {
@@ -228,7 +235,7 @@
           file: [],
           size: [],
           suffix: [],
-          typePayes: '',
+          typePaye: '',
           costType: '',
           name: [],
           amount: '',
@@ -256,7 +263,7 @@
           proportions: [{ required: true, message: '抽成比例不能为空', trigger: 'change' }]
         },
         rule: {
-          typePayes: [{ required: true, message: '收支类型不能为空', trigger: 'change' }],
+          typePaye: [{ required: true, message: '收支类型不能为空', trigger: 'change' }],
           costType: [{ required: true, message: '费用类型不能为空', trigger: 'change' }],
           payer: [{ required: true, message: '付款人不能为空', trigger: 'change' }],
           payee: [{ required: true, message: '收款人不能为空', trigger: 'change' }],
@@ -329,7 +336,7 @@
           size: [],
           name: [],
           suffix: [],
-          typePayes: '',
+          typePaye: '',
           contractId: '',
           income: '',
           user: '',
@@ -351,15 +358,7 @@
         this.getList()
       },
       beforeRemove(files, fileList) {
-        this.$confirm('此操作将删除附件, 是否继续?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          this.file.push(files.id)
-        }).catch(_ => {
-          return
-        })
+        return this.$confirm(`确定移除 $ { file.name }？`)
       },
       OnChange(file, fileList) {
         this.fileList = fileList
@@ -368,6 +367,7 @@
         this.fileList = fileList
       },
       handleAvatarSuccess(response, file, fileList) {
+        this.resetTemp()
         this.temps.file.push(response.data.url)
         this.temps.size.push(response.data.size)
         this.temps.suffix.push(response.data.suffix)
@@ -436,7 +436,6 @@
         this.$refs['dataFormExpnses'].validate((valid) => {
           if (valid) {
             this.listLoading = true
-            debugger
             createcontractExpnses(this.temps).then(response => {
               if (response.code === 50001) {
                 store.dispatch('GetRefreshToken').then(() => {

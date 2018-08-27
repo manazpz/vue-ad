@@ -20,3 +20,13 @@ export function keyToValue(data) {
     return acc
   }, {})
 }
+
+export function remove(arr, item) {
+  var result = []
+  arr.forEach(function(element) {
+    if (element !== item) {
+      result.push(element)
+    }
+  })
+  return result
+}

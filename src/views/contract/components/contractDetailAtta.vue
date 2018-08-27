@@ -15,7 +15,7 @@
       </el-table-column>
       <el-table-column align="center" label="附件名称" min-width="90">
         <template slot-scope="scope">
-          <span>{{scope.row.name}}</span>
+          <a style="color:#FF3030;text-decoration:underline;" @click="handleUpload(scope.row)" >{{scope.row.name}}</a>
         </template>
       </el-table-column>
       <el-table-column align="center" label="附件格式" width="90">
@@ -43,18 +43,6 @@
           <span>{{scope.row.remark}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="操作" width="150" class-name="small-padding fixed-width">
-        <template slot-scope="scope">
-          <el-dropdown>
-            <el-button type="success" size="mini" >
-              操作<i class="el-icon-arrow-down el-icon--right"></i>
-            </el-button>
-            <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item @click.native = "handleUpload(scope.row)">下载</el-dropdown-item>
-            </el-dropdown-menu>
-          </el-dropdown>
-        </template>
-      </el-table-column>
     </el-table>
     <!-- 表格 end -->
 
@@ -66,7 +54,6 @@
       </el-pagination>
     </div>
     <!-- 分页组件 end -->
-
 
 
   </div>
@@ -85,6 +72,7 @@
         total: null,
         listLoading: true,
         listQuery: {
+          type: 'HT',
           pageNum: 1,
           pageSize: 5
         },
@@ -109,7 +97,6 @@
             })
           }
           if (response.code === 200) {
-            this.getList()
             this.list = response.data.items
             this.total = response.data.total
             setTimeout(() => {
@@ -133,9 +120,6 @@
         this.getList()
       },
       handleUpload(row) {
-        this.temp.name = row.name
-        this.temp.extend = row.extend
-        this.temp.url = row.url
         window.location.href = process.env.BASE_API + '/contract/getReasourse?name=' + row.name + '&extend=' + row.extend + '&url=' + row.url
       }
     }

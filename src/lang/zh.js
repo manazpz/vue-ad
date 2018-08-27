@@ -13,6 +13,7 @@ export default {
     contractList: '租赁合同',
     contractSaleList: '销售合同',
     contractDetail: '合同详情',
+    contractSubDetail: '子合同详情',
     goodsList: '商品管理',
     goodsEdit: '商品新增',
     customer: '客户管理',
