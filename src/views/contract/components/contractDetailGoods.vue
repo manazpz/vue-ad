@@ -64,6 +64,7 @@
   import store from '@/store'
   export default {
     name: 'contractDetailGoods',
+    inject: ['reload'],
     directives: {
       waves
     },
@@ -135,8 +136,7 @@
       handleModifyStatus(row, isValid) {
         this.$confirm('您确定删除吗？').then(_ => {
           this.listLoading = true
-          debugger
-          const params = { id: row.goodsId }
+          const params = { id: row.id, no: row.no }
           deleteGoods(params).then(response => {
             if (response.code === 50001) {
               store.dispatch('GetRefreshToken').then(() => {

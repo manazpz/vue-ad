@@ -4,7 +4,7 @@
     <!-- 过滤条件 start -->
     <div class="filter-container">
       <el-input @keyup.enter.native="handleFilter" style="width: 200px;" class="filter-item"
-                placeholder="合同编号" v-model="listQuery.name">
+                placeholder="合同编号" v-model="listQuery.number">
       </el-input>
       <el-select clearable class="filter-item" style="width: 130px" v-model="listQuery.statusKey"
                  placeholder="合同状态">
@@ -120,8 +120,8 @@
         <el-form-item label-width="110px" label="合同编号"  prop="number" class="postInfo-container-item">
           <el-input  v-model="temp.number"  required placeholder="请输入合同编号"></el-input>
         </el-form-item>
-        <el-form-item label-width="110px" label="商品名称" prop="goodsIds" class="postInfo-container-item">
-          <el-select v-model="temp.goodsIds" required multiple placeholder="请选择">
+        <el-form-item label-width="110px" label="商品名称" prop="goods" class="postInfo-container-item">
+          <el-select v-model="temp.goods" required multiple placeholder="请选择">
             <el-option v-for="item in goodsOptions" :key="item.goodsId" :label="item.name" :value="item.goodsId">
             </el-option>
           </el-select>
@@ -171,7 +171,6 @@
           ref="foreignPersonUploadItem"
           class="avatar-uploader"
           :action="uploadUrl"
-          v-model="temp.file"
           name="file"
           :show-file-list="true"
           :multiple="true"
@@ -199,7 +198,7 @@
 </template>
 
 <script>
-  import { contractList, createContract, updateContract, deleteContract } from '@/api/contract'
+  import { contractList, createContract, updateContract, deleteContract, contractParList } from '@/api/contract'
   import { toThousands, commafyback } from '@/utils/common'
   import { customerList } from '@/api/customer'
   import { goodsList } from '@/api/goods'
@@ -222,16 +221,13 @@
         listLoading: true,
         fileList: [],
         file: [],
-        size: [],
-        suffix: [],
-        name: [],
         falg: true,
         params: null,
         listQuery: {
           id: undefined,
           pageNum: 1,
           pageSize: 10,
-          name: undefined,
+          number: undefined,
           types: 'ZL',
           statusKey: undefined,
           sort: 'lastCreateTime DESC'
@@ -247,20 +243,15 @@
         temp: {
           id: undefined,
           title: '',
-          goods: '',
-          goodsIds: '',
+          goods: [],
           subContract: '',
           money: '',
           money_init: '',
           paid: '',
           number: '',
+          types: 'HT',
           file: [],
-          url: '',
           fileList: [],
-          size: [],
-          suffix: [],
-          types: '',
-          name: [],
           contractType: '',
           unpaid: '',
           expenses: '',
@@ -292,7 +283,7 @@
         },
         rule: {
           title: [{ required: true, message: '标题不能为空', trigger: 'change' }],
-          goodsIds: [{ required: true, message: '商品不能为空', trigger: 'change' }],
+          goods: [{ required: true, message: '商品不能为空', trigger: 'change' }],
           number: [{ required: false, validator: check_zh, trigger: 'blur' }],
           customerKeyA: [{ required: true, message: '甲方不能为空', trigger: 'change' }],
           customerKeyB: [{ required: true, message: '乙方不能为空', trigger: 'change' }],
@@ -352,7 +343,7 @@
           if (!response.data.items) return
           this.goodsOptions = response.data.items
         })
-        contractList(this.listQuery).then(response => {
+        contractParList(this.listQuery).then(response => {
           if (!response.data.items) return
           this.contractOptions = response.data.items
         })
@@ -377,27 +368,22 @@
         this.getList()
       },
       handleRemove(file, fileList) {
+        this.temp.file = fileList
       },
       beforeRemove(file, fileList) {
-        this.$confirm('此操作将删除附件, 是否继续?', '提示', {
+        return this.$confirm('此操作将删除附件, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          this.file.push(file.id)
-        }).catch(_ => {
-          return
+          return true
         })
       },
       OnChange(file, fileList) {
         this.fileList = fileList
       },
       handleAvatarSuccess(response, file, fileList) {
-        this.temp.file.push({ url: response.data.url, id: '' })
-        this.temp.size.push(response.data.size)
-        this.temp.suffix.push(response.data.suffix)
-        this.temp.types = 'HT'
-        this.temp.name.push(response.data.name)
+        this.temp.file = fileList
       },
       beforeAvatarUpload(file) {
       },
@@ -434,20 +420,16 @@
         this.temp = {
           id: undefined,
           title: '',
-          goods: '',
-          goodsIds: '',
+          goods: [],
           subContract: '',
           money: '',
           money_init: '',
           contractType: '',
           number: '',
           file: [],
-          fileId: [],
+          files: [],
           fileList: [],
-          size: [],
-          suffix: [],
-          types: '',
-          name: [],
+          types: 'HT',
           paid: '',
           unpaid: '',
           expenses: '',
@@ -479,6 +461,7 @@
       },
       handleCreate() {
         this.resetTemp()
+        this.temp.file = []
         this.dialogStatus = '新增合同'
         this.dialogFormVisible = true
         this.$nextTick(() => {
@@ -512,7 +495,7 @@
       },
       handleUpdate(row) {
         this.falg = false
-        this.fileList = row.fileList
+        this.fileList = row.file
         this.temp = Object.assign({}, row)
         this.temp.money_init = commafyback(this.temp.money_init)
         this.temp.timestamp = new Date(this.temp.timestamp)
@@ -525,11 +508,8 @@
       updateData() {
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
-            this.temp.fileId = this.file
-            const tempData = Object.assign({}, this.temp)
-            tempData.timestamp = +new Date(tempData.timestamp)
             this.listLoading = true
-            updateContract(tempData).then((response) => {
+            updateContract(this.temp).then((response) => {
               if (response.code === 50001) {
                 store.dispatch('GetRefreshToken').then(() => {
                   this.updateData()

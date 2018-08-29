@@ -461,7 +461,7 @@
       },
       handleCreate() {
         this.resetTemp()
-        this.temp.file = ''
+        this.temp.file = []
         this.dialogStatus = '新增合同'
         this.dialogFormVisible = true
         this.$nextTick(() => {

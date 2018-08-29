@@ -410,7 +410,7 @@
       },
       attention(val, index) {
         this.falg = false
-        window.location.href = process.env.BASE_API + '/contract/getReasourse?name=' + val.attaname[index] + '&extend=' + val.extend[index] + '&url=' + val.url[index]
+        window.location.href = val.url[index]
       },
       handdle(row) {
         if (this.falg) {

@@ -343,7 +343,7 @@
         this.$refs.uploadItem.uploadFiles.splice(index, 1)
       },
       handleUpload(val, index) {
-        window.location.href = process.env.BASE_API + '/contract/getReasourse?name=' + val[index].name + '&extend=' + val[index].extend + '&url=' + val[index].url
+        window.location.href = val.url[index]
       },
       createDataExpnses() {
         this.$refs['dataFormExpnses'].validate((valid) => {

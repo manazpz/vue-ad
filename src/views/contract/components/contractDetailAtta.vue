@@ -158,7 +158,7 @@
       },
       handleUpload(row) {
         debugger
-        window.location.href = process.env.BASE_API + '/contract/getReasourse?name=' + row.name + '&extend=' + row.extend + '&url=' + row.url
+        window.location.href = row.url
       }
     }
   }
