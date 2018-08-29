@@ -100,8 +100,8 @@
         <el-form-item label-width="110px" label="合同编号"  prop="number" class="postInfo-container-item">
           <el-input  v-model="temp.number"  required placeholder="请输入合同编号"></el-input>
         </el-form-item>
-        <el-form-item label-width="110px" label="商品名称" prop="goodsIds" class="postInfo-container-item">
-          <el-select v-model="temp.goodsIds" required multiple placeholder="请选择">
+        <el-form-item label-width="110px" label="商品名称" prop="goods" class="postInfo-container-item">
+          <el-select v-model="temp.goods" required multiple placeholder="请选择">
             <el-option v-for="item in goodsOptions" :key="item.goodsId" :label="item.name" :value="item.goodsId">
             </el-option>
           </el-select>
@@ -151,7 +151,6 @@
           ref="foreignPersonUploadItem"
           class="avatar-uploader"
           :action="uploadUrl"
-          v-model="temp.file"
           name="file"
           :show-file-list="true"
           :multiple="true"
@@ -181,7 +180,7 @@
 </template>
 
 <script>
-  import { contractSubList } from '@/api/contract'
+  import { contractSubList, updateContract, deleteContract } from '@/api/contract'
   import { toThousands, commafyback } from '@/utils/common'
   import waves from '@/directive/waves' // 水波纹指令
   import store from '@/store'
@@ -223,8 +222,8 @@
         temp: {
           id: undefined,
           title: '',
-          goods: '',
-          goodsIds: '',
+          goodsname: '',
+          goods: [],
           subContract: '',
           money: '',
           money_init: '',
@@ -318,35 +317,29 @@
         this.getList()
       },
       handleRemove(file, fileList) {
+        this.temp.file = fileList
       },
       beforeRemove(file, fileList) {
-        this.$confirm('此操作将删除附件, 是否继续?', '提示', {
+        return this.$confirm('此操作将删除附件, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
-        }).then(() => {
-          this.file.push(file.id)
-        }).catch(_ => {
-          return
+        }).then(_ => {
+          return true
         })
       },
       OnChange(file, fileList) {
         this.fileList = fileList
       },
       handleAvatarSuccess(response, file, fileList) {
-        this.temp.file.push({ url: response.data.url, id: '' })
-        this.temp.size.push(response.data.size)
-        this.temp.suffix.push(response.data.suffix)
-        this.temp.types = 'HT'
-        this.temp.name.push(response.data.name)
+        this.temp.file = fileList
       },
       beforeAvatarUpload(file) {
       },
       handleUpdate(row) {
         this.falg = false
+        this.fileList = row.file
         this.temp = Object.assign({}, row)
-        this.fileList = row.fileList
-        this.temp.timestamp = new Date(this.temp.timestamp)
         this.temp.money_init = commafyback(this.temp.money_init)
         this.dialogStatus = '编辑子合同'
         this.dialogFormVisible = true
@@ -357,25 +350,33 @@
       updateData() {
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
-            this.temp.fileId = this.file
-            // updateExpnss(this.temps).then((response) => {
-            //   if (response.code === 50001) {
-            //     store.dispatch('GetRefreshToken').then(() => {
-            //       this.updateData()
-            //     })
-            //   }
-            //   if (response.code === 200) {
-            //     this.listLoading = false
-            //     this.dialogExpnsesVisible = false
-            //     this.$notify({
-            //       title: '成功',
-            //       message: '更新成功',
-            //       type: 'success',
-            //       duration: 2000
-            //     })
-            //     this.reload()
-            //   }
-            // })
+            this.listLoading = true
+            updateContract(this.temp).then((response) => {
+              if (response.code === 50001) {
+                store.dispatch('GetRefreshToken').then(() => {
+                  this.updateData()
+                })
+              }
+              if (response.code === 200) {
+                this.reload()
+                for (const v of this.list) {
+                  if (v.id === this.temp.id) {
+                    const index = this.list.indexOf(v)
+                    this.list.splice(index, 1, this.temp)
+                    break
+                  }
+                }
+                this.listLoading = false
+                this.dialogFormVisible = false
+                this.$notify({
+                  title: '成功',
+                  message: '更新成功',
+                  type: 'success',
+                  duration: 2000
+                })
+
+              }
+            })
           }
         })
       },
@@ -383,27 +384,27 @@
         this.falg = false
         this.$confirm('您确定删除吗？').then(_ => {
           this.listLoading = true
-          // const params = { id: row.id, no: row.no, isValid: isValid }
-          // deleteContractPay(params).then(response => {
-          //   if (response.code === 50001) {
-          //     store.dispatch('GetRefreshToken').then(() => {
-          //       this.handleModifyStatus(row, isValid)
-          //     })
-          //   }
-          //   if (response.code === 200) {
-          //     this.getList()
-          //     this.listLoading = false
-          //     this.dialogExpnsesVisible = false
-          //     this.$message({
-          //       message: '操作成功',
-          //       type: 'success'
-          //     })
-          //     row.del = isValid
-          //   }
-          // }).catch(() => {
-          //   this.listLoading = false
-          //   this.falg = true
-          // })
+          const params = { id: row.id, isValid: isValid }
+          deleteContract(params).then(response => {
+            if (response.code === 50001) {
+              store.dispatch('GetRefreshToken').then(() => {
+                this.handleModifyStatus(row, isValid)
+              })
+            }
+            if (response.code === 200) {
+              this.reload()
+              this.listLoading = false
+              this.dialogFormVisible = false
+              this.$message({
+                message: '操作成功',
+                type: 'success'
+              })
+              row.del = isValid
+            }
+          }).catch(() => {
+            this.listLoading = false
+            this.falg = true
+          })
         }).catch(_ => {
           return
         })

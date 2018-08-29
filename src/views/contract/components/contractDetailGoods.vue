@@ -33,7 +33,13 @@
           <span>{{scope.row.price}}</span>
         </template>
       </el-table-column>
-
+      <el-table-column align="center" label="操作" min-width="150" class-name="small-padding fixed-width">
+        <template slot-scope="scope">
+          <el-button size="mini" type="danger"
+                     @click="handleModifyStatus(scope.row, 'Y')">{{$t('table.delete')}}
+          </el-button>
+        </template>
+      </el-table-column>
     </el-table>
     <!-- 表格 end -->
 
@@ -52,7 +58,7 @@
 </template>
 
 <script>
-  import { contractGoodsList } from '@/api/contract'
+  import { contractGoodsList, deleteGoods } from '@/api/contract'
   import { toThousands } from '@/utils/common'
   import waves from '@/directive/waves' // 水波纹指令
   import store from '@/store'
@@ -125,6 +131,32 @@
       handleCurrentChange(val) {
         this.listQuery.pageNum = val
         this.getList()
+      },
+      handleModifyStatus(row, isValid) {
+        this.$confirm('您确定删除吗？').then(_ => {
+          this.listLoading = true
+          debugger
+          const params = { id: row.goodsId }
+          deleteGoods(params).then(response => {
+            if (response.code === 50001) {
+              store.dispatch('GetRefreshToken').then(() => {
+                this.handleModifyStatus(row, isValid)
+              })
+            }
+            if (response.code === 200) {
+              this.reload()
+              this.listLoading = false
+              this.$message({
+                message: '操作成功',
+                type: 'success'
+              })
+            }
+          }).catch(() => {
+            this.listLoading = false
+          })
+        }).catch(_ => {
+          return
+        })
       }
     }
   }

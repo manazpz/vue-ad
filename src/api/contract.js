@@ -128,6 +128,14 @@ export function deleteAtta(params) {
   })
 }
 
+export function deleteGoods(params) {
+  return request({
+    url: '/contract/deleteGoods',
+    method: 'POST',
+    data: params
+  })
+}
+
 export function deleteContractPay(params) {
   return request({
     url: '/contract/deletePay',
@@ -149,5 +157,13 @@ export function deleteContractPaetenr(params) {
     url: '/contract/deletePartner',
     method: 'POST',
     data: params
+  })
+}
+
+export function contractParList(query) {
+  return request({
+    url: '/contract/parlist',
+    method: 'get',
+    params: query
   })
 }

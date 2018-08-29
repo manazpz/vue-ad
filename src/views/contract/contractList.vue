@@ -529,7 +529,6 @@
             const tempData = Object.assign({}, this.temp)
             tempData.timestamp = +new Date(tempData.timestamp)
             this.listLoading = true
-            debugger
             updateContract(tempData).then((response) => {
               if (response.code === 50001) {
                 store.dispatch('GetRefreshToken').then(() => {

@@ -74,37 +74,31 @@
       <!-- Tab页签 end -->
 
 
-    <!-- 弹出框新增合作伙伴 start -->
-    <el-dialog :title="dialogStatus" :visible.sync="dialogFormVisible">
-      <el-form :rules="rules" ref="dataForm" :model="temp" label-position="left" label-width="70px"
-               style='width: 400px; margin-left:50px;'>
-        <el-form-item label-width="110px" label="合作伙伴" prop="user" class="postInfo-container-item">
-          <el-select v-model="temp.user" required filterable placeholder="请选择">
-            <el-option v-for="item in userListOptions" :key="item.customerId" :label="item.customerName" :value="item.customerId">
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label-width="110px" label="客户性质" prop="types" class="postInfo-container-item">
-          <el-select v-model="temp.types" style="width: 100px" >
-            <el-option v-for="item in typeOptions" :key="item.keyWord" :label="item.name" :value="item.keyWord" >
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label-width="110px" label="当前收益" class="postInfo-container-item">
-          <el-input v-model="temp.income" disabled true></el-input>
-        </el-form-item>
-        <el-form-item label-width="110px" label="抽成比例" prop="proportions" class="postInfo-container-item">
-          <el-input type="number" v-model.number="temp.proportions" required placeholder="请输入抽成比例（填写数字）"></el-input>
-        </el-form-item>
-        <el-form-item label-width="110px" label="摘要"  class="postInfo-container-item">
-          <el-input v-model="temp.reamrks1" type="textarea"  :rows="5"  placeholder="请摘要内容"></el-input>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">{{$t('table.cancel')}}</el-button>
-        <el-button type="primary" @click="createData">{{$t('table.confirm')}}</el-button>
-      </div>
-    </el-dialog>
+      <!-- 弹出框新增合作伙伴 start -->
+      <el-dialog :title="dialogStatus" :visible.sync="dialogFormVisible">
+        <el-form :rules="rules" ref="dataForm" :model="temp" label-position="left" label-width="70px"
+                 style='width: 400px; margin-left:50px;'>
+          <el-form-item label-width="110px" label="合作伙伴" prop="user" class="postInfo-container-item">
+            <el-select v-model="temp.user" required filterable placeholder="请选择">
+              <el-option v-for="item in userListOptions" :key="item.customerId" :label="item.customerName" :value="item.customerId">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label-width="110px" label="当前收益" class="postInfo-container-item">
+            <el-input v-model="temp.income" disabled true></el-input>
+          </el-form-item>
+          <el-form-item label-width="110px" label="抽成比例" prop="proportions" class="postInfo-container-item">
+            <el-input type="number" v-model.number="temp.proportions" required placeholder="请输入抽成比例（填写数字）"></el-input>
+          </el-form-item>
+          <el-form-item label-width="110px" label="摘要"  class="postInfo-container-item">
+            <el-input v-model="temp.reamrks1" type="textarea"  :rows="5"  placeholder="请摘要内容"></el-input>
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="dialogFormVisible = false">{{$t('table.cancel')}}</el-button>
+          <el-button type="primary" @click="createData">{{$t('table.confirm')}}</el-button>
+        </div>
+      </el-dialog>
       <!-- 弹出框新增合作伙伴 end -->
 
 
@@ -112,8 +106,8 @@
       <el-dialog :title="dialogExpnses" :visible.sync="dialogExpnsesVisible">
         <el-form :rules="rule" ref="dataFormExpnses" :model="temps" label-position="left" label-width="70px"
                  style='width: 400px; margin-left:50px;'>
-          <el-form-item label-width="110px" label="收支类型" prop="typePaye" class="postInfo-container-item">
-            <el-select v-model="temps.typePaye" required filterable placeholder="请选择">
+          <el-form-item label-width="110px" label="收支类型" prop="typePayes" class="postInfo-container-item">
+            <el-select v-model="temps.typePayes" required filterable placeholder="请选择">
               <el-option v-for="item in typePayOptions" :key="item.keyWord" :label="item.name" :value="item.keyWord" >
               </el-option>
             </el-select>
@@ -142,25 +136,25 @@
           <el-form-item label-width="110px" label="摘要"  class="postInfo-container-item">
             <el-input v-model="temps.reamrks1" type="textarea"  :rows="5"  placeholder="请摘要内容"></el-input>
           </el-form-item>
+          <el-upload
+            ref="foreignPersonUploadItem"
+            class="avatar-uploader"
+            :action="uploadUrl"
+            v-model="temps.file"
+            name="file"
+            :show-file-list="true"
+            :multiple="true"
+            :limit="9"
+            :file-list="fileList"
+            :on-change="OnChange"
+            :on-remove="OnRemove"
+            :before-remove="beforeRemove"
+            :on-success="handleAvatarSuccess"
+            accept=".jpg,.jpeg,.png,.gif,.pdf,.doc,.docx,.xls,.xlsx,.JPG,.JPEG,.PBG,.GIF,.PDF,.DOC,.DOCX,.XLS,.XLSX"
+            :before-upload="beforeAvatarUpload">
+            <el-button type="text">上传附件</el-button>
+          </el-upload>
         </el-form>
-        <el-upload
-          ref="foreignPersonUploadItem"
-          class="avatar-uploader"
-          :action="uploadUrl"
-          v-model="temps.file"
-          name="file"
-          :show-file-list="true"
-          :multiple="true"
-          :limit="9"
-          :file-list="fileList"
-          :on-change="OnChange"
-          :on-remove="OnRemove"
-          :before-remove="beforeRemove"
-          :on-success="handleAvatarSuccess"
-          accept=".jpg,.jpeg,.png,.gif,.pdf,.doc,.docx,.xls,.xlsx,.JPG,.JPEG,.PBG,.GIF,.PDF,.DOC,.DOCX,.XLS,.XLSX"
-          :before-upload="beforeAvatarUpload">
-        <el-button type="text">上传附件</el-button>
-        </el-upload>
         <div slot="footer" class="dialog-footer">
           <el-button @click="cancleDataExpnses">{{$t('table.cancel')}}</el-button>
           <el-button type="primary" @click="createDataExpnses">{{$t('table.confirm')}}</el-button>
@@ -169,9 +163,9 @@
       <!-- 弹出框新增收付款明细 end -->
 
 
-    <transition name="fade">
-      <router-view></router-view>
-    </transition>
+      <transition name="fade">
+        <router-view></router-view>
+      </transition>
     </el-form>
   </div>
 </template>
@@ -182,7 +176,6 @@
   import { customerList } from '@/api/customer'
   import { getConfig } from '@/api/user'
   import store from '@/store'
-  import router from '@/router'
   import msgContract from './components/contractDetailMsg'
   import contractPay from './components/contractDetailPay'
   import subContract from './components/contractDetailSub'
@@ -190,7 +183,7 @@
   import atta from './components/contractDetailAtta'
   import goods from './components/contractDetailGoods'
   export default {
-    name: 'contractSubDetail',
+    name: 'contractDetail',
     inject: ['reload'],
     components: { Sticky, subContract, partner, msgContract, contractPay, atta, goods },
     data: function() {
@@ -235,7 +228,7 @@
           file: [],
           size: [],
           suffix: [],
-          typePaye: '',
+          typePayes: '',
           costType: '',
           name: [],
           amount: '',
@@ -263,7 +256,7 @@
           proportions: [{ required: true, message: '抽成比例不能为空', trigger: 'change' }]
         },
         rule: {
-          typePaye: [{ required: true, message: '收支类型不能为空', trigger: 'change' }],
+          typePayes: [{ required: true, message: '收支类型不能为空', trigger: 'change' }],
           costType: [{ required: true, message: '费用类型不能为空', trigger: 'change' }],
           payer: [{ required: true, message: '付款人不能为空', trigger: 'change' }],
           payee: [{ required: true, message: '收款人不能为空', trigger: 'change' }],
@@ -336,7 +329,7 @@
           size: [],
           name: [],
           suffix: [],
-          typePaye: '',
+          typePayes: '',
           contractId: '',
           income: '',
           user: '',
@@ -358,21 +351,22 @@
         this.getList()
       },
       beforeRemove(files, fileList) {
-        return this.$confirm(`确定移除 $ { file.name }？`)
+        return this.$confirm('此操作将删除附件, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(_ => {
+          return true
+        })
       },
       OnChange(file, fileList) {
         this.fileList = fileList
       },
       OnRemove(file, fileList) {
-        this.fileList = fileList
+        this.temps.file = fileList
       },
       handleAvatarSuccess(response, file, fileList) {
-        this.resetTemp()
-        this.temps.file.push(response.data.url)
-        this.temps.size.push(response.data.size)
-        this.temps.suffix.push(response.data.suffix)
-        this.temps.types = 'SZ'
-        this.temps.name.push(response.data.name)
+        this.temps.file = fileList
       },
       beforeAvatarUpload(file) {
       },
@@ -473,8 +467,5 @@
   }
   .el-form-item{
     margin-bottom: 10px !important;
-  }
-  .avatar-uploader {
-    margin-left: 45px !important;
   }
 </style>

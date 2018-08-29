@@ -351,28 +351,22 @@
         this.getList()
       },
       beforeRemove(files, fileList) {
-        this.$confirm('此操作将删除附件, 是否继续?', '提示', {
+        return this.$confirm('此操作将删除附件, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
-        }).then(() => {
-          this.file.push(files.id)
-        }).catch(_ => {
-          return
+        }).then(_ => {
+          return true
         })
       },
       OnChange(file, fileList) {
         this.fileList = fileList
       },
       OnRemove(file, fileList) {
-        this.fileList = fileList
+        this.temps.file = fileList
       },
       handleAvatarSuccess(response, file, fileList) {
-        this.temps.file.push(response.data.url)
-        this.temps.size.push(response.data.size)
-        this.temps.suffix.push(response.data.suffix)
-        this.temps.types = 'SZ'
-        this.temps.name.push(response.data.name)
+        this.temps.file = fileList
       },
       beforeAvatarUpload(file) {
       },
@@ -436,7 +430,6 @@
         this.$refs['dataFormExpnses'].validate((valid) => {
           if (valid) {
             this.listLoading = true
-            debugger
             createcontractExpnses(this.temps).then(response => {
               if (response.code === 50001) {
                 store.dispatch('GetRefreshToken').then(() => {
@@ -474,8 +467,5 @@
   }
   .el-form-item{
     margin-bottom: 10px !important;
-  }
-  .avatar-uploader {
-    margin-left: 45px !important;
   }
 </style>

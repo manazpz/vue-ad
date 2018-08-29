@@ -75,7 +75,7 @@
       <el-form :rules="rule" ref="dataFormExpnses" :model="temps" label-position="left" label-width="70px"
                style='width: 400px; margin-left:50px;'>
         <el-form-item label-width="110px" label="收支类型" prop="typePay" class="postInfo-container-item">
-          <el-select v-model="temps.typePayKey" required filterable placeholder="请选择">
+          <el-select v-model="temps.typePay" required filterable placeholder="请选择">
             <el-option v-for="item in typePayOptions" :key="item.keyWord" :label="item.name" :value="item.keyWord" >
             </el-option>
           </el-select>
@@ -107,8 +107,8 @@
         <el-upload
           ref="foreignPersonUploadItem"
           class="avatar-uploader"
-          :action="uploadUrl"
           v-model="temps.file"
+          :action="uploadUrl"
           name="file"
           :show-file-list="true"
           :multiple="true"
@@ -172,7 +172,7 @@
         },
         temps: {
           id: undefined,
-          type: '',
+          type: 'HT',
           file: [],
           fileId: [],
           size: [],
@@ -232,8 +232,7 @@
       },
       handleUpdate(row) {
         this.temps = Object.assign({}, row)
-        debugger
-        this.fileList = row.fileList
+        this.fileList = row.file
         this.temps.timestamp = new Date(this.temps.timestamp)
         this.temps.amount = commafyback(this.temps.amount)
         this.dialogExpnses = '编辑收支明细'
@@ -245,7 +244,6 @@
       updateData() {
         this.$refs['dataFormExpnses'].validate((valid) => {
           if (valid) {
-            this.temps.fileId = this.file
             updateExpnss(this.temps).then((response) => {
               if (response.code === 50001) {
                 store.dispatch('GetRefreshToken').then(() => {
@@ -253,6 +251,7 @@
                 })
               }
               if (response.code === 200) {
+                this.reload()
                 this.listLoading = false
                 this.dialogExpnsesVisible = false
                 this.$notify({
@@ -271,7 +270,7 @@
         this.falg = false
         this.$confirm('您确定删除吗？').then(_ => {
           this.listLoading = true
-          const params = { id: row.id, no: row.no, isValid: isValid }
+          const params = { row: row, isValid: isValid }
           deleteContractPay(params).then(response => {
             if (response.code === 50001) {
               store.dispatch('GetRefreshToken').then(() => {
@@ -279,7 +278,7 @@
               })
             }
             if (response.code === 200) {
-              this.getList()
+              this.reload()
               this.listLoading = false
               this.dialogExpnsesVisible = false
               this.$message({
@@ -316,15 +315,16 @@
         this.listQuery.pageNum = val
         this.getList()
       },
+      handleRemove(file, fileList) {
+        this.temps.file = fileList
+      },
       beforeRemove(files, fileList) {
-        this.$confirm('此操作将删除附件, 是否继续?', '提示', {
+        return this.$confirm('此操作将删除附件, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
-        }).then(() => {
-          this.file.push(files.id)
-        }).catch(_ => {
-          return
+        }).then(_ => {
+          return true
         })
       },
       OnChange(file, fileList) {
@@ -334,11 +334,7 @@
         this.fileList = fileList
       },
       handleAvatarSuccess(response, file, fileList) {
-        this.temps.file.push({ url: response.data.url, id: '' })
-        this.temps.size.push(response.data.size)
-        this.temps.suffix.push(response.data.suffix)
-        this.temps.types = 'SZ'
-        this.temps.name.push(response.data.name)
+        this.temps.file = fileList
       },
       beforeAvatarUpload(file) {
       },

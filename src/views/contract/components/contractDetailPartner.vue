@@ -81,7 +81,7 @@
           <el-input type="number" v-model.number="temps.pro" required placeholder="请输入抽成比例（填写数字）"></el-input>
         </el-form-item>
         <el-form-item label-width="110px" label="摘要"  class="postInfo-container-item">
-          <el-input v-model="temps.reamrks1" type="textarea"  :rows="5"  placeholder="请摘要内容"></el-input>
+          <el-input v-model="temps.remarks1" type="textarea"  :rows="5"  placeholder="请摘要内容"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -178,7 +178,6 @@
       },
       handleUpdate(row) {
         this.temps = Object.assign({}, row)
-        debugger
         this.temps.timestamp = new Date(this.temps.timestamp)
         // this.temps.amount = commafyback(this.temps.amount)
         this.dialogStatus = '编辑合作伙伴'
