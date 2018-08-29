@@ -399,7 +399,7 @@
               })
             }
             if (response.code === 200) {
-              this.getList()
+              this.reload()
               this.listLoading = false
               this.dialogFormVisible = false
               this.$message({
@@ -516,7 +516,7 @@
                 })
               }
               if (response.code === 200) {
-                this.getList()
+                this.reload()
                 for (const v of this.list) {
                   if (v.id === this.temp.id) {
                     const index = this.list.indexOf(v)
