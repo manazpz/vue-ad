@@ -157,7 +157,6 @@
         this.getList()
       },
       handleUpload(row) {
-        debugger
         window.location.href = row.url
       }
     }
