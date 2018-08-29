@@ -374,7 +374,6 @@
                   type: 'success',
                   duration: 2000
                 })
-
               }
             })
           }

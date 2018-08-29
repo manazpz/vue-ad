@@ -192,7 +192,7 @@
         fileList: [],
         tableKey: 0,
         activeName: 'first',
-        list: null,
+        list: { title: '' },
         listData: null,
         total: null,
         listLoading: true,

@@ -375,7 +375,7 @@
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
-        }).then(_ => {
+        }).then(() => {
           return true
         })
       },
@@ -532,7 +532,6 @@
                   type: 'success',
                   duration: 2000
                 })
-
               }
             })
           }

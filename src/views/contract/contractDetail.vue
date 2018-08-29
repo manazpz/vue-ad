@@ -192,7 +192,7 @@
         fileList: [],
         tableKey: 0,
         activeName: 'first',
-        list: null,
+        list: { title: '' },
         listData: null,
         total: null,
         listLoading: true,
@@ -292,7 +292,6 @@
           }
           if (response.code === 200) {
             this.list = response.data.items[0]
-            this.total = response.data.total
             this.list.money_init = toThousands(this.list.money_init)
             this.list.paid = toThousands(this.list.paid)
             this.list.income = toThousands(this.list.income)
