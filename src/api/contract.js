@@ -32,11 +32,11 @@ export function deleteContract(params) {
   })
 }
 
-export function getContract(params) {
+export function getContract(query) {
   return request({
     url: '/contract/queryPartner',
-    method: 'POST',
-    data: params
+    method: 'get',
+    params: query
   })
 }
 
@@ -96,11 +96,11 @@ export function expnsesList(query) {
   })
 }
 
-export function contractAttaList(params) {
+export function contractAttaList(query) {
   return request({
     url: '/contract/queryAtta',
-    method: 'POST',
-    data: params
+    method: 'get',
+    params: query
   })
 }
 
@@ -112,11 +112,11 @@ export function attaList(query) {
   })
 }
 
-export function contractGoodsList(params) {
+export function contractGoodsList(query) {
   return request({
     url: '/contract/contractGoodList',
-    method: 'POST',
-    data: params
+    method: 'get',
+    params: query
   })
 }
 

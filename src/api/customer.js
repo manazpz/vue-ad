@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 export function customerList(query) {
   return request({
-    url: '/customer/list',
+    url: '/customer/droplist',
     method: 'get',
     params: query
   })
