@@ -15,7 +15,7 @@
       </el-table-column>
       <el-table-column align="center" label="附件名称" min-width="90">
         <template slot-scope="scope">
-          <a style="color:#FF3030;text-decoration:underline;" @click="handleUpload(scope.row)" >{{scope.row.name}}</a>
+          <a style="color:#FF3030;text-decoration:underline;"  :href=" scope.row.url " target="_blank">{{scope.row.name}}</a>
         </template>
       </el-table-column>
       <el-table-column align="center" label="附件格式" width="90">
@@ -157,7 +157,9 @@
         this.getList()
       },
       handleUpload(row) {
-        window.location.href = row.url
+        debugger
+        // window.location.href = row.url
+        window.open(row.url, '_blank')
       }
     }
   }

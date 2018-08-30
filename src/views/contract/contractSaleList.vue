@@ -126,7 +126,7 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label-width="110px" label="添加子合同"  class="postInfo-container-item">
+        <el-form-item label-width="110px" label="父合同"  class="postInfo-container-item">
           <el-select v-model="temp.subContract" filterable placeholder="请选择父合同编号">
             <el-option v-for="item in contractOptions" :key="item.id" :label="item.title" :value="item.id">
             </el-option>

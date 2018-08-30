@@ -60,7 +60,7 @@
       </el-table-column>
       <el-table-column align="center" label="附件" min-width="90">
         <template slot-scope="scope">
-          <a  v-for="(item,index) in scope.row.attaname" style="color:#FF3030;text-decoration:underline;" @click="attention(scope.row,index)" >{{item}};</a>
+          <a  v-for="(item,index) in scope.row.flie" style="color:#FF3030;text-decoration:underline;" :href=" item.url[index] " target="_blank">{{item.name}};</a>
         </template>
       </el-table-column>
 
@@ -285,6 +285,7 @@
               this.getList()
             })
           }
+          debugger
           if (response.code === 200) {
             this.list = response.data.items
             this.total = response.data.total

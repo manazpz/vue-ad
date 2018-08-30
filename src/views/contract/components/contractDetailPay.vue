@@ -41,7 +41,7 @@
       </el-table-column>
       <el-table-column align="center" label="附件" min-width="110">
         <template slot-scope="scope">
-          <a v-for="(item,index) in scope.row.file" style="color:#FF3030;text-decoration:underline;" @click="handleUpload(scope.row.file,index)" >{{item.name}};</a>
+          <a v-for="(item,index) in scope.row.file" style="color:#FF3030;text-decoration:underline;"  :href=" item.url " target="_blank">{{item.name}};</a>
         </template>
       </el-table-column>
       <el-table-column align="center" label="创建时间" min-width="130">
