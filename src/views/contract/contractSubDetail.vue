@@ -28,6 +28,9 @@
               <el-form-item label-width="150px" label="总金额:" class="postInfo-container-item">
                 <span>{{ list.money_init }}</span>
               </el-form-item>
+              <el-form-item label-width="150px" label="摘要:" class="postInfo-container-item">
+                <span>{{ list.reamrks1 }}</span>
+              </el-form-item>
             </el-col>
             <el-col :span="8">
               <el-form-item label-width="100px" label="收款总金额:" class="postInfo-container-item">
@@ -35,6 +38,9 @@
               </el-form-item>
               <el-form-item label-width="100px" label="支出总金额:" class="postInfo-container-item">
                 <span>{{ list.expenses }}</span>
+              </el-form-item>
+              <el-form-item label-width="100px" label="总税额:" class="postInfo-container-item">
+                <span>{{ list.tax }}</span>
               </el-form-item>
               <el-form-item label-width="100px" label="盈利:" class="postInfo-container-item">
                 <span>{{ list.income }}</span>
@@ -44,9 +50,6 @@
               </el-form-item>
               <el-form-item label-width="100px" label="到期时间:" class="postInfo-container-item">
                 <span>{{ list.expireTime }}</span>
-              </el-form-item>
-              <el-form-item label-width="100px" label="摘要:" class="postInfo-container-item">
-                <span>{{ list.reamrks1 }}</span>
               </el-form-item>
             </el-col>
           </el-row>
@@ -172,7 +175,7 @@
 <script>
   import Sticky from '@/components/Sticky' // 粘性header组件
   import { toThousands } from '@/utils/common'
-  import { createContractPartner, createcontractExpnses, contractList, cancleExpnses } from '@/api/contract'
+  import { createContractPartner, createcontractExpnses, contractSubListMain, cancleExpnses } from '@/api/contract'
   import { customerList } from '@/api/customer'
   import { getConfig } from '@/api/user'
   import store from '@/store'
@@ -266,6 +269,7 @@
     },
     created() {
       this.listQuery.id = this.$route.query.id
+      this.listQuery.type = this.$route.query.type
       this.temps.id = this.$route.query.id
       this.getType()
       this.getList()
@@ -284,7 +288,7 @@
       },
       getList() {
         this.listLoading = true
-        contractList(this.listQuery).then(response => {
+        contractSubListMain(this.listQuery).then(response => {
           if (response.code === 50001) {
             store.dispatch('GetRefreshToken').then(() => {
               this.getList()
@@ -296,6 +300,7 @@
             this.list.money_init = toThousands(this.list.money_init)
             this.list.paid = toThousands(this.list.paid)
             this.list.income = toThousands(this.list.income)
+            this.list.tax = toThousands(this.list.tax)
             this.list.expenses = toThousands(this.list.expenses)
             setTimeout(() => {
               this.listLoading = false

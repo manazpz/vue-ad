@@ -23,6 +23,11 @@
           <span>{{scope.row.amount}}</span>
         </template>
       </el-table-column>
+      <el-table-column align="center" label="税额" min-width="110">
+        <template slot-scope="scope">
+          <span>{{scope.row.tax_limit}}</span>
+        </template>
+      </el-table-column>
       <el-table-column align="center" label="收款人" min-width="110">
         <template slot-scope="scope">
           <span>{{scope.row.payee}}</span>
@@ -166,6 +171,7 @@
         listQuery: {
           pageNum: 1,
           pageSize: 10,
+          type: 'SZ',
           name: undefined,
           statusKey: undefined,
           sort: 'lastCreateTime DESC'
@@ -220,6 +226,11 @@
           if (response.code === 200) {
             this.listData = response.data.items
             this.listData.forEach(function(c) {
+              if (c.typePayKey === 'SK') {
+                c.tax_limit = c.tax_limit * c.amount / 100
+              } else {
+                c.tax_limit = 0
+              }
               c.amount = toThousands(c.amount)
             })
             setTimeout(() => {

@@ -56,6 +56,14 @@ export function contractSubList(query) {
   })
 }
 
+export function contractSubListMain(query) {
+  return request({
+    url: '/contract/subListMain',
+    method: 'get',
+    params: query
+  })
+}
+
 export function createcontractSub(query) {
   return request({
     url: '/contract/insertSub',

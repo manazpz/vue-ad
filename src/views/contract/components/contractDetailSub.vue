@@ -60,7 +60,7 @@
       </el-table-column>
       <el-table-column align="center" label="附件" min-width="90">
         <template slot-scope="scope">
-          <a  v-for="(item,index) in scope.row.flie" style="color:#FF3030;text-decoration:underline;" :href=" item.url[index] " target="_blank">{{item.name}};</a>
+          <a  v-for="(item,index) in scope.row.file" style="color:#FF3030;text-decoration:underline;" :href=" item.url[index] " target="_blank">{{item.name}};</a>
         </template>
       </el-table-column>
 
@@ -285,7 +285,6 @@
               this.getList()
             })
           }
-          debugger
           if (response.code === 200) {
             this.list = response.data.items
             this.total = response.data.total
@@ -293,9 +292,6 @@
               c.money_init = toThousands(c.money_init)
               c.paid = toThousands(c.paid)
               c.income = toThousands(c.income)
-              c.url = c.url.split(',')
-              c.attaname = c.attaname.split(',')
-              c.extend = c.extend.split(',')
             })
             setTimeout(() => {
               this.listLoading = false
