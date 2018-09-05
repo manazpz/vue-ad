@@ -159,6 +159,12 @@ export const asyncRouterMap = [
       component: () => import('@/views/user/basic/logoUpload'),
       name: 'logoUpload',
       meta: { title: 'logoUpload' }
+    },
+    {
+      path: 'delAuditList',
+      component: () => import('@/views/user/basic/delAuditList'),
+      name: 'delAuditList',
+      meta: { title: 'delAuditList' }
     }]
   }
 ]

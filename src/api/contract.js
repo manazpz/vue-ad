@@ -175,3 +175,28 @@ export function contractParList(query) {
     params: query
   })
 }
+
+export function createCancelApp(params) {
+  return request({
+    url: '/contract/createCancelApp',
+    method: 'POST',
+    data: params
+  })
+}
+
+export function delAuditList(query) {
+  return request({
+    url: '/contract/delAuditList',
+    method: 'get',
+    params: query
+  })
+}
+
+export function updateAudit(params) {
+  return request({
+    url: '/contract/updateAudit',
+    method: 'POST',
+    data: params
+  })
+}
+

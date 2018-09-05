@@ -8,12 +8,12 @@
           <span>{{scope.$index+1}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="收支类型" min-width="110">
+      <el-table-column align="center" label="收支类型" min-width="80">
         <template slot-scope="scope">
           <span>{{scope.row.typePay}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="费用类型" min-width="110">
+      <el-table-column align="center" label="费用类型" min-width="80">
         <template slot-scope="scope">
           <span>{{scope.row.costType}}</span>
         </template>
@@ -23,17 +23,17 @@
           <span>{{scope.row.amount}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="税额" min-width="110">
+      <el-table-column align="center" label="税额" min-width="80">
         <template slot-scope="scope">
           <span>{{scope.row.tax_limit}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="收款人" min-width="110">
+      <el-table-column align="center" label="收款人" min-width="80">
         <template slot-scope="scope">
           <span>{{scope.row.payee}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="付款人" min-width="110">
+      <el-table-column align="center" label="付款人" min-width="80">
         <template slot-scope="scope">
           <span>{{scope.row.payer}}</span>
         </template>
@@ -56,10 +56,13 @@
       </el-table-column>
       <el-table-column align="center" label="操作" min-width="150" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">{{$t('table.edit')}}</el-button>
-          <el-button size="mini" type="danger"
-                     @click="handleModifyStatus(scope.row, 'Y')">{{$t('table.delete')}}
-          </el-button>
+          <el-button-group>
+            <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">{{$t('table.edit')}}</el-button>
+            <el-button size="mini" type="danger"
+                       @click="handleModifyStatus(scope.row, 'Y')">{{$t('table.delete')}}
+            </el-button>
+            <el-button type="warning" size="mini" @click="handleUpdateApp(scope.row)">删除申请</el-button>
+          </el-button-group>
         </template>
       </el-table-column>
 
@@ -107,7 +110,7 @@
           <el-input type="number" v-model.number ="temps.amount" required></el-input>
         </el-form-item>
         <el-form-item label-width="110px" label="摘要"  class="postInfo-container-item">
-          <el-input v-model="temps.remarks1" type="textarea"  :rows="5"  placeholder="请摘要内容"></el-input>
+          <el-input v-model="temps.remarks1" type="textarea"  :rows="5"  placeholder="请输入摘要内容"></el-input>
         </el-form-item>
         <el-upload
           ref="foreignPersonUploadItem"
@@ -136,11 +139,35 @@
     </el-dialog>
     <!-- 弹出框新增收付款明细 end -->
 
+    <!-- 弹出框删除申请 start -->
+    <el-dialog :title="dialogAppExpnses" :visible.sync="dialogAppExpnsesVisible">
+      <el-form :rules="rule" ref="dataAppFormExpnses" :model="tempApp" label-position="left" label-width="70px"
+               style='width: 400px; margin-left:50px;'>
+        <el-form-item label-width="110px" label="模块" prop="type" class="postInfo-container-item">
+          <el-select v-model="tempApp.type" required filterable placeholder="请选择">
+            <el-option key="01" label="合同" value="01">
+            </el-option>
+            <el-option key="02" label="收支明细" value="02">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label-width="110px" label="删除原因" prop="remarks" class="postInfo-container-item">
+          <el-input v-model="tempApp.remarks" type="textarea"  :rows="5"  placeholder="请输入删除原因"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="cancleDataExpnses">{{$t('table.cancel')}}</el-button>
+        <el-button type="primary" @click="addAPPData">{{$t('table.confirm')}}</el-button>
+      </div>
+    </el-dialog>
+    <!-- 弹出框新增收付款明细 end -->
+
+
   </div>
 </template>
 
 <script>
-  import { expnsesList, createcontractExpnses, cancleExpnses, updateExpnss, deleteContractPay } from '@/api/contract'
+  import { expnsesList, createcontractExpnses, cancleExpnses, updateExpnss, deleteContractPay, createCancelApp } from '@/api/contract'
   import { toThousands, commafyback } from '@/utils/common'
   import waves from '@/directive/waves' // 水波纹指令
   import store from '@/store'
@@ -168,6 +195,8 @@
         listLoading: true,
         dialogExpnsesVisible: false,
         dialogExpnses: '',
+        dialogAppExpnsesVisible: false,
+        dialogAppExpnses: '',
         listQuery: {
           pageNum: 1,
           pageSize: 10,
@@ -175,6 +204,12 @@
           name: undefined,
           statusKey: undefined,
           sort: 'lastCreateTime DESC'
+        },
+        tempApp: {
+          id: undefined,
+          type: '',
+          index: '',
+          remarks: ''
         },
         temps: {
           id: undefined,
@@ -304,6 +339,53 @@
           })
         }).catch(_ => {
           return
+        })
+      },
+      resetAppTemp() {
+        this.tempApp = {
+          id: undefined,
+          type: '',
+          index: '',
+          remarks: ''
+        }
+      },
+      handleUpdateApp(row) {
+        this.resetAppTemp()
+        this.tempApp.id = row.id
+        this.dialogAppExpnses = '删除申请'
+        this.dialogAppExpnsesVisible = true
+        this.$nextTick(() => {
+          this.$refs['dataAppFormExpnses'].clearValidate()
+        })
+      },
+      addAPPData() {
+        this.$refs['dataAppFormExpnses'].validate((valid) => {
+          if (valid) {
+            this.listLoading = true
+            createCancelApp(this.tempApp).then(response => {
+              if (response.code === 50001) {
+                store.dispatch('GetRefreshToken').then(() => {
+                  this.getList()
+                })
+              }
+              if (response.code === 200) {
+                this.reload()
+                this.listLoading = false
+                this.dialogAppExpnsesVisible = false
+                this.$notify({
+                  title: '成功',
+                  message: '提交申请成功',
+                  type: 'success',
+                  duration: 2000
+                })
+                setTimeout(() => {
+                  this.listLoading = false
+                }, 1.5 * 1000)
+              }
+            }).catch(() => {
+              this.listLoading = false
+            })
+          }
         })
       },
       cancleDataExpnses() {

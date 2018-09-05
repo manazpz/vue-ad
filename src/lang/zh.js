@@ -5,6 +5,7 @@ export default {
     logoUpload: 'LOGO上传',
     avatarUpload: '头像上传',
     errorPages: '错误页面',
+    delAuditList: '删除申请',
     page401: '401',
     page404: '404',
     errorLog: '错误日志',
