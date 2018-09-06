@@ -345,13 +345,14 @@
         this.tempApp = {
           id: undefined,
           type: '',
-          index: '',
+          no: '',
           remarks: ''
         }
       },
       handleUpdateApp(row) {
         this.resetAppTemp()
         this.tempApp.id = row.id
+        this.tempApp.no = row.no
         this.dialogAppExpnses = '删除申请'
         this.dialogAppExpnsesVisible = true
         this.$nextTick(() => {
